@@ -6,7 +6,6 @@ import pprint
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_XML = FILE_DIR + '/files/sar_DTDv2.19.xml'
-print(TEST_XML)
 
 if __name__ == '__main__':
     sar_parser = SarXmlParser()
