@@ -46,13 +46,13 @@ class SarXmlParser(Parser):
         # Main dict for saving extracted data
         self.data = dict()
 
-    def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io'}):
+    def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io', 'disk', 'fs'}):
         if self.file_path is not None:  # instance reset for repeated usage
             self.__init__()
 
         self.file_path = file_path
 
-        if not sections.issubset({'cpu', 'mem', 'io'}):
+        if not sections.issubset({'cpu', 'mem', 'io', 'disk', 'fs'}):
             raise ParserError('Incorrect sections')
 
         for section in sections:
@@ -99,22 +99,22 @@ class SarXmlParser(Parser):
 
     def _parse_cpu(self, element_list):
         """
-        Private method for parse CPU metrics
+        Private method for parse CPU section
 
         :param element_list: section context
         """
         for element in element_list:
             attributes = element.attrib
-            for key in attributes.keys():
-                if key != 'number':
-                    self.data['cpu'].setdefault('_'.join(['cpu', attributes['number']]), dict()).setdefault(key, [])\
-                        .append(float(attributes[key].replace(',', '.')))
+            for attribute in attributes:
+                if attribute != 'number':
+                    self.data['cpu'].setdefault('_'.join(['cpu', attributes['number']]), dict()).setdefault(attribute, [])\
+                        .append(float(attributes[attribute].replace(',', '.')))
             self.data['cpu'].setdefault('_'.join(['cpu', attributes['number']]), dict()).setdefault('util', [])\
                 .append(100.0-float(attributes['idle'].replace(',', '.')))
 
     def _parse_mem(self, element_list):
         """
-        Private method for parse memory metrics
+        Private method for parse memory section
 
         :param element_list: section context
         """
@@ -123,7 +123,7 @@ class SarXmlParser(Parser):
 
     def _parse_io(self, element_list):
         """
-        Private method for parse IO metrics
+        Private method for parse IO section
 
         :param element_list: section context
         """
@@ -136,6 +136,41 @@ class SarXmlParser(Parser):
             elif element.tag == 'io-writes':
                 self.data['io'].setdefault('wtps', []).append(float(element.get('wtps').replace(',', '.')))
                 self.data['io'].setdefault('bwrtn', []).append(float(element.get('bwrtn').replace(',', '.')))
+
+    def _parse_disk(self, element_list):
+        """
+        Private method for parse disk section
+
+        :param element_list: section context
+        """
+        for element in element_list:
+            attributes = element.attrib
+            for attribute in attributes:
+                if attribute != 'dev':
+                    self.data['disk'].setdefault(attributes['dev'], dict()).setdefault(attribute, [])\
+                        .append(float(attributes[attribute].replace(',', '.')))
+
+    def _parse_network(self, element_list):
+        """
+        Private method for parse network section
+
+        :param element_list: section context
+        """
+        for element in element_list:
+            pass
+
+    def _parse_filesystems(self, element_list):
+        """
+        Private method for parse filesystems section
+
+        :param element_list: section context
+        """
+        for element in element_list:
+            attributes = element.attrib
+            for attribute in attributes:
+                if attribute != 'fsname':
+                    self.data['fs'].setdefault(attributes['fsname'], dict()).setdefault(attribute, []) \
+                        .append(float(attributes[attribute].replace(',', '.')))
 
     def _parse_stat(self, element_list, sections):
         """
@@ -155,6 +190,10 @@ class SarXmlParser(Parser):
                 self._parse_io(list(element))
             elif element.tag == 'memory' and 'mem' in sections:
                 self._parse_mem(list(element))
+            elif element.tag == 'disk' and 'io' in sections:
+                self._parse_disk(list(element))
+            elif element.tag == 'filesystems' and 'fs' in sections:
+                self._parse_filesystems(list(element))
 
     def _extract_data(self, section_key, data_offset):
         """
@@ -164,10 +203,10 @@ class SarXmlParser(Parser):
         :param data_offset: offset in metrics lists
         :return: dict of section with data from all metrics lists by offset
         """
-        if section_key == 'cpu':
-            return {cpu: {metric: self.data[section_key][cpu][metric][data_offset]
-                          for metric in self.data[section_key][cpu]}
-                    for cpu in self.data[section_key]}
+        if section_key in {'cpu', 'disk', 'fs'}:
+            return {section: {metric: self.data[section_key][section][metric][data_offset]
+                              for metric in self.data[section_key][section]}
+                    for section in self.data[section_key]}
         elif section_key in {'mem', 'io'}:
             return {metric: self.data[section_key][metric][data_offset] for metric in self.data[section_key]}
         else:
