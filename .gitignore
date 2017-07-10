@@ -1,3 +1,4 @@
 
 *.pyc
-examples/plotly_graph_example.py
+.idea
+.idea/*
