@@ -88,7 +88,7 @@ class SarXmlParser(Parser):
         with tqdm(desc='Analyzing sar stat', total=self.stat_length) as pbar:
             for event, element in self.iterparse_context:
                 if event == 'end' and element.tag == 'timestamp':
-                    dt = element.get('date') + '_' + element.get('time')
+                    dt = element.get('date') + '_' + element.get('time').replace('-',':')
                     self.data.setdefault('timestamp', [])\
                         .append(int(datetime.datetime.strptime(dt, "%Y-%m-%d_%H:%M:%S").timestamp()))
                     self._parse_stat(list(element), sections)
