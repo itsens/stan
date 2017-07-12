@@ -21,17 +21,16 @@ class JmeterXmlParser(Parser):
         self.lt = list()  # Latency: 89
         self.ct = list()  # Connect Time: 51
         self.ts = list()
-        self.ts = list()
         self.s = list()  # "true"
         self.lb = list()  # "HTTPR: login"
         self.rm = list()  # "OK"
         self.tn = list()  # "TG: get page 75 documents  1-1"
         self.dt = list()  # "text"
         self.de = list()  # "UTF-8"
-        self.by = list()  # "21978"
-        self.sby = list()  # "1479"
+        self.by = list()  # "21978" Size in bytes: 21978
+        self.sby = list()  # "1479" Sent bytes:1479
         self.sc = list()  # "1"
-        self.ec = list()  # "0"
+        self.ec = list()  # Error Count: 0
         self.ng = list()  # "1"
         self.na = list()  # "1"
         self.hn = list()  # "MSK-W0680" >
@@ -65,7 +64,6 @@ class JmeterXmlParser(Parser):
             raise ParserError('Incorrect data format: {}'.format(data_format))
 
         if data_format == 'flat':
-            # TODO: correction by time zone
             return dict(t=self.t,
                         it=self.it,
                         lt=self.lt,
