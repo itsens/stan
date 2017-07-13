@@ -1,5 +1,5 @@
 from .parser import Parser, ParserError
-from stan import StanJoinedData, StanDict
+from stan import StanDict, StanJoinedData, StanFlatData
 import datetime
 from xml.etree.ElementTree import iterparse
 from tqdm import tqdm
@@ -199,7 +199,7 @@ class SarXmlParser(Parser):
                     metric_key = 'fs_' + attributes['fsname'].split('/')[-1] + '_' + attribute
                     self.__metrics[metric_key] = float(attributes[attribute].replace(',', '.'))
 
-    def get_stat(self, data_format='flat'):
+    def get_stat(self, data_format: str='flat') -> StanJoinedData or StanFlatData:
         """
         Return stat data with specified format. Available formats: 'flat', 'joined'
 
