@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="115" it="0" lt="89" ct="51" ts="1499763757896" s="true" lb="HTTPR: login" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="UTF-8" by="21978" sby="1479" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <redirectLocation class="java.lang.String">https://integrationb2b.iitrust.ru/edi/</redirectLocation>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="2497" it="0" lt="2487" ct="0" ts="1499763759011" s="true" lb="HTTPR: documents" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="" by="239017" sby="547" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String">sessionid=AC77C747E25DE99CD894350FB5AB6BF7; rememberme=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaWQiOiI0ZjJlM2M1MC1mZjUxLTQwYzUtOTQzMC1hMWRhYWI4MmVlMTAiLCJjaWQiOiJmODE3OGQ4Yy01MzY3LTQ0YjYtODI5ZS03YzBhZmExZjU0ZDkiLCJpYXQiOjE0OTk3NjM3NjUsImV4cCI6MTQ5OTg3MTc2NSwiYXVkIjpbIkIyQiJdLCJpc3MiOiJDQSJ9.c8FPypBOhHFrxkmtiIRR3g5meSN35zFIeStOAWZ8BmE</cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents?orderColumn=date&amp;pageSize=75&amp;v=6</java.net.URL>
+</httpSample>
+<httpSample t="3802" it="0" lt="3794" ct="4" ts="1499763762509" s="true" lb="HTTPR: documents" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="" by="238961" sby="547" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String">sessionid=AC77C747E25DE99CD894350FB5AB6BF7; rememberme=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaWQiOiI0ZjJlM2M1MC1mZjUxLTQwYzUtOTQzMC1hMWRhYWI4MmVlMTAiLCJjaWQiOiJmODE3OGQ4Yy01MzY3LTQ0YjYtODI5ZS03YzBhZmExZjU0ZDkiLCJpYXQiOjE0OTk3NjM3NjUsImV4cCI6MTQ5OTg3MTc2NSwiYXVkIjpbIkIyQiJdLCJpc3MiOiJDQSJ9.c8FPypBOhHFrxkmtiIRR3g5meSN35zFIeStOAWZ8BmE</cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents?orderColumn=date&amp;pageSize=75&amp;v=7</java.net.URL>
+</httpSample>
+<httpSample t="3764" it="0" lt="3758" ct="4" ts="1499763767312" s="true" lb="HTTPR: documents" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="" by="238922" sby="547" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String">sessionid=AC77C747E25DE99CD894350FB5AB6BF7; rememberme=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaWQiOiI0ZjJlM2M1MC1mZjUxLTQwYzUtOTQzMC1hMWRhYWI4MmVlMTAiLCJjaWQiOiJmODE3OGQ4Yy01MzY3LTQ0YjYtODI5ZS03YzBhZmExZjU0ZDkiLCJpYXQiOjE0OTk3NjM3NjUsImV4cCI6MTQ5OTg3MTc2NSwiYXVkIjpbIkIyQiJdLCJpc3MiOiJDQSJ9.c8FPypBOhHFrxkmtiIRR3g5meSN35zFIeStOAWZ8BmE</cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents?orderColumn=date&amp;pageSize=75&amp;v=7</java.net.URL>
+</httpSample>
+<httpSample t="2418" it="0" lt="2408" ct="5" ts="1499763772078" s="true" lb="HTTPR: documents" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="" by="239009" sby="547" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String">sessionid=AC77C747E25DE99CD894350FB5AB6BF7; rememberme=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaWQiOiI0ZjJlM2M1MC1mZjUxLTQwYzUtOTQzMC1hMWRhYWI4MmVlMTAiLCJjaWQiOiJmODE3OGQ4Yy01MzY3LTQ0YjYtODI5ZS03YzBhZmExZjU0ZDkiLCJpYXQiOjE0OTk3NjM3NjUsImV4cCI6MTQ5OTg3MTc2NSwiYXVkIjpbIkIyQiJdLCJpc3MiOiJDQSJ9.c8FPypBOhHFrxkmtiIRR3g5meSN35zFIeStOAWZ8BmE</cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents?orderColumn=date&amp;pageSize=75&amp;v=2</java.net.URL>
+</httpSample>
+<httpSample t="3691" it="0" lt="3679" ct="4" ts="1499763775497" s="true" lb="HTTPR: documents" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="" by="238946" sby="547" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String">sessionid=AC77C747E25DE99CD894350FB5AB6BF7; rememberme=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaWQiOiI0ZjJlM2M1MC1mZjUxLTQwYzUtOTQzMC1hMWRhYWI4MmVlMTAiLCJjaWQiOiJmODE3OGQ4Yy01MzY3LTQ0YjYtODI5ZS03YzBhZmExZjU0ZDkiLCJpYXQiOjE0OTk3NjM3NjUsImV4cCI6MTQ5OTg3MTc2NSwiYXVkIjpbIkIyQiJdLCJpc3MiOiJDQSJ9.c8FPypBOhHFrxkmtiIRR3g5meSN35zFIeStOAWZ8BmE</cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents?orderColumn=date&amp;pageSize=75&amp;v=8</java.net.URL>
+</httpSample>
+<sample t="0" it="0" lt="0" ct="0" ts="1499763779188" s="true" lb="Debug Sampler" rm="OK" tn="TG: get page 75 documents  1-1" dt="text" de="windows-1251" by="598" sby="0" sc="1" ec="0" ng="1" na="1" hn="MSK-W0680">
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">JMeterVariables
+</samplerData>
+</sample>
+
+</testResults>
