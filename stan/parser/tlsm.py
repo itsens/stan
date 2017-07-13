@@ -68,6 +68,7 @@ class TlsmCsvParser(Parser):
         self._failed_req_rsp_connections = set()
 
     def get_stat(self, data_format: str='flat') -> StanJoinedData or StanFlatData:
+
         pass
 
     def parse(self, file_paths: Iterable):
