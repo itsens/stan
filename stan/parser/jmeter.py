@@ -97,7 +97,7 @@ class JmeterXmlParser(Parser):
             ...}
         :param data_format: return data format
         :param time_zone_correction:
-        :return: dict() of data with specified format
+        :return: list() of data with specified format
         """
         if data_format not in {'flat', 'joined'}:
             raise ParserError('Incorrect data format: {}'.format(data_format))
@@ -113,4 +113,5 @@ class JmeterXmlParser(Parser):
                         ec=self.error_count,
                         ts=self.timestamp)
         elif data_format == 'joined':
+            # TODO: реализовать
             return self.data
