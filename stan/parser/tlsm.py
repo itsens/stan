@@ -1,8 +1,8 @@
+from stan import StanDict, StanData
 from .parser import Parser, ParserError
-from stan import StanDict, StanJoinedData, StanFlatData
-from collections import Iterable
 from tqdm import tqdm
 from os import path
+from collections import Iterable
 
 # Common operations offsets
 TIMESTAMP = 0
@@ -51,52 +51,61 @@ FAILED_RECV_RSP = '17'
 CLOSE_SSL_CONNECTION = '18'
 
 
-class TlsmCsvParser(Parser):
+class TlsMeterStatFile:
 
-    def __init__(self):
+    def __init__(self, file_path):
+
         self.sampling_interval = 's'
+        self.tlsm_log_file = file_path
 
-        self.tlsm_log_files = None
-        self.tlsm_log_file = None
+        self.stat = dict(
+            timestamp=[],
 
-        self.data = StanJoinedData()
-        self.file_data = StanJoinedData()
+            tcp_connections_per_second=[],
+            ssl_connections_per_second=[],
+            throughput_upload=[],
+            throughput_download=[],
+            req_per_second=[],
+            rsp_per_second=[],
+            active_tcp_connections_count=[],
+            active_ssl_connections_count=[],
+
+            tcp_times=[],
+            ssl_handshake_times=[],
+            ttfb_times=[],
+            connection_times=[],
+
+            failed_tcp_per_second=[],
+            failed_ssl_per_second=[],
+            failed_req_per_second=[],
+            failed_rsp_per_second=[],
+            failed_total_per_second=[]
+        )
 
         self._connections_start_times = dict()
         self._success_tcp_connections = set()
         self._success_ssl_connections = set()
         self._failed_req_rsp_connections = set()
 
-    def get_stat(self, data_format: str='flat') -> StanJoinedData or StanFlatData:
+    def _get_time_interval(self, timestamp: int) -> int:
+        """
+        "Round" the timestamp to the specified interval
 
-        pass
-
-    def parse(self, file_paths: Iterable):
-        for file in file_paths:
-            if not path.isfile(file):
-                raise ParserError('File does not exists: {}'.format(file))
-            self.tlsm_log_file = file
-            self._parse_file()
-
-    def _parse_file(self):
-        with open(self.tlsm_log_file, 'r') as stat_file:
-
-            file_size = sum(1 for l in open(self.tlsm_log_file))
-            desc = '{}'.format(path.basename(self.tlsm_log_file))
-
-            for line in tqdm(stat_file, total=file_size, desc=desc):
-                if line[0].isdigit():
-                    operation = line.strip().split(';')
-                    self._process_operation(operation)
+        :param timestamp: nanosecond
+        :return: time interval timestamp (Unix time)
+        """
+        # TODO: Expand the supported averaging intervals
+        if self.sampling_interval == 's':
+            return timestamp//10**9
 
     def _process_operation(self, operation: list):
-        # Уникальный ID соединения в контексте всех процессов и потоков tls_meter
+        # Unique connection ID in the context of all processes and threads of tls_meter
         connection_id = '_'.join([operation[THREAD_ID], operation[CONNECTION_ID]])
 
         operation_timestamp = int(operation[TIMESTAMP])
         operation_time_interval = self._get_time_interval(operation_timestamp)
 
-        # Если первый или новый интервал, то добавляем новые записи в статистику
+        # If the first or the new interval, then we add new records to the statistics
         if len(self.stat['timestamp']) == 0 or operation_time_interval > self.stat['timestamp'][-1]:
             self.stat['timestamp'].append(operation_time_interval)
             self.stat['tcp_connections_per_second'].append(0)
@@ -180,13 +189,58 @@ class TlsmCsvParser(Parser):
             if connection_id not in self._failed_req_rsp_connections:
                 self.stat['connection_times'][-1].append(operation_timestamp - self._connections_start_times[connection_id])
 
-    def _get_time_interval(self, timestamp: int) -> int:
-        """
-        "Округляет" временную метку до указанного интервала
+    def parse(self):
+        with open(self.tlsm_log_file, 'r') as stat_file:
 
-        :param timestamp: временная метка (Unix timestamp), нс
-        :return: метка временного интервала
-        """
-        # TODO: расширить поддерживаемые интервалы усреднения
-        if self.sampling_interval == 's':
-            return timestamp//10**9
+            file_size = sum(1 for l in open(self.tlsm_log_file))
+            desc = '{}'.format(path.basename(self.tlsm_log_file))
+
+            for line in tqdm(stat_file, total=file_size, desc=desc):
+                if line[0].isdigit():
+                    operation = line.strip().split(';')
+                    self._process_operation(operation)
+
+        return {ts: {metric: self.stat[metric][n]
+                     for metric in self.stat if metric is not 'timestamp'}
+                for n, ts in enumerate(self.stat['timestamp'])}
+
+
+class TlsmCsvParser(Parser):
+    def __init__(self):
+        self.stat_files = None
+        self.stat = dict()
+
+    def parse(self, file_paths: Iterable):
+        if self.stat_files is not None:
+            self.__init__()
+
+        self.stat_files = file_paths
+
+        for file in tqdm(self.stat_files, desc='Total'):
+
+            tlsm_stat = TlsMeterStatFile(file)
+            _stat = tlsm_stat.parse()
+
+            for time in _stat:
+                if time in self.stat:
+                    for metric in _stat[time]:
+                        self.stat[time][metric] += _stat[time][metric]
+                else:
+                    self.stat[time] = _stat[time]
+
+        for time in tqdm(self.stat, desc='Calculating average time stats'):
+            for time_metric in {'tcp_times', 'ssl_handshake_times', 'ttfb_times', 'connection_times'}:
+                self.stat[time][time_metric] = sum(self.stat[time][time_metric]) /\
+                                               (1 if len(self.stat[time][time_metric]) == 0
+                                                else len(self.stat[time][time_metric])) /\
+                                               1000000
+
+    def get_stat(self) -> StanData:
+        result = StanData()
+        for ts in self.stat:
+            metrics = StanDict()
+            for metric in self.stat[ts]:
+                metrics[metric] = self.stat[ts][metric]
+            result.append(ts, metrics)
+
+        return result
