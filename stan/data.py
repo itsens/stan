@@ -1,4 +1,5 @@
 from collections import defaultdict
+import pickle
 
 
 class StanDict(dict):
@@ -87,6 +88,15 @@ class StanData(defaultdict):
     def relate(self, by: str):
         # TODO: Implement
         pass
+
+    def save(self, file_path: str):
+        with open(file_path, 'wb') as pkl:
+            pickle.dump(self, pkl, pickle.HIGHEST_PROTOCOL)
+
+    def load(self, file_path: str):
+        with open(file_path, 'rb') as pkl:
+            tmp = pickle.load(pkl)
+        self.__dict__.update(tmp)
 
     def append(self, timestamp, stan_dict: StanDict):
         if type(stan_dict) != StanDict:

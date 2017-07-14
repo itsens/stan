@@ -27,3 +27,8 @@ if __name__ == '__main__':
 
     print('\n********* data_3.flat() *********')
     pprint(data_3.flat())
+
+    data_3.save('/root/test.pkl')
+
+    data_4 = StanData()
+    data_4.load('/root/test.pkl')
