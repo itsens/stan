@@ -1,15 +1,15 @@
-from stan import StanJoinedData, StanDict
+from stan import StanData, StanDict
 from pprint import pprint
 
 
 if __name__ == '__main__':
-    data_1 = StanJoinedData()
+    data_1 = StanData()
     data_1[1499763761]['metric_1'] = 1
     data_1[1499763761]['metric_2'] = 2
     data_1[1499763761]['metric_3'] = 3
     data_1.append(1499763762, StanDict(metric_1=1, metric_2=2, metric_3=3))
 
-    data_2 = StanJoinedData()
+    data_2 = StanData()
     data_2.append(1499763762, StanDict(metric_4=4, metric_5=5, metric_6=6))
     data_2.append(1499763763, StanDict(metric_4=4, metric_5=5, metric_6=6))
 

@@ -1,5 +1,5 @@
 from .parser import Parser, ParserError
-from stan import StanDict, StanJoinedData, StanFlatData
+from stan import StanData, StanDict
 import datetime
 from xml.etree.ElementTree import iterparse
 from tqdm import tqdm
@@ -43,7 +43,7 @@ class SarXmlParser(Parser):
         self.cpu_count = None
 
         # Main structure for saving extracted data
-        self.data = StanJoinedData()
+        self.data = StanData()
         self.__metrics = None
 
     def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io', 'disk', 'net', 'fs'}):
@@ -199,17 +199,10 @@ class SarXmlParser(Parser):
                     metric_key = 'fs_' + attributes['fsname'].split('/')[-1] + '_' + attribute
                     self.__metrics[metric_key] = float(attributes[attribute].replace(',', '.'))
 
-    def get_stat(self, data_format: str='flat') -> StanJoinedData or StanFlatData:
+    def get_stat(self):
         """
-        Return stat data with specified format. Available formats: 'flat', 'joined'
+        Return stat data in StanData structure
 
-        :param data_format: specify return data format
-        :return: StanFlatData or StanJoinedData
+        :return: StanData
         """
-        if data_format not in {'flat', 'joined'}:
-            raise ParserError('Incorrect data format: {}'.format(data_format))
-
-        if data_format == 'flat':
-            return self.data.flat()
-        elif data_format == 'joined':
-            return self.data
+        return self.data

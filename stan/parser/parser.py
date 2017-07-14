@@ -1,5 +1,5 @@
 import abc
-from stan import StanJoinedData, StanFlatData
+from stan import StanData
 
 
 class ParserError(Exception):
@@ -18,5 +18,5 @@ class Parser(abc.ABC):
         """ Parsing a file """
 
     @abc.abstractmethod
-    def get_stat(self, data_format: str) -> StanJoinedData or StanFlatData:
-        """ Returns stat data """
+    def get_stat(self) -> StanData:
+        """ Returns stat data in StanData structure """

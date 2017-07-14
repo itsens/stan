@@ -43,16 +43,16 @@ class StanDict(dict):
             return super().keys()
 
 
-class StanJoinedData(defaultdict):
+class StanData(defaultdict):
     """
     Is a defaultdict with StanData as a default_factory.
     StanData is a dict() of metrics with custom method keys() for flexible key filtering.
 
     Format:
-    StanJoinedData(timestamp1: StanDict,
-                   timestamp2: StanDict,
-                   timestamp3: StanDict,
-                   ...)
+    StanData(timestamp1: StanDict,
+             timestamp2: StanDict,
+             timestamp3: StanDict,
+             ...)
     """
     def __init__(self):
         super().__init__(StanDict)
@@ -74,7 +74,7 @@ class StanJoinedData(defaultdict):
         if type(other) != type(self):
             raise TypeError('Different types')
 
-        result = StanJoinedData()
+        result = StanData()
 
         for key in self:
             result[key] = self[key]
@@ -115,43 +115,31 @@ class StanFlatData(defaultdict):
     All metrics must have a positional relationship.
 
     Format:
-    StanFlatData(timestamp=[],
-                 metric1=[],
+    StanFlatData(metric1=[],
                  metric2=[],
                  ...)
     """
     def __init__(self):
         super().__init__(list)
-        self['timestamp'] = []
 
     def __repr__(self):
         return dict.__repr__(self)
 
     def append(self, metrics: dict):
-        if 'timestamp' not in metrics:
-            raise KeyError('metrics dict must have "timestamp"')
-        self['timestamp'].append(metrics['timestamp'])
         for metric in metrics:
-            if metric != 'timestamp':
-                self[metric].append(metrics[metric])
+            self[metric].append(metrics[metric])
 
     def relate(self, by: str):
         # TODO: Implement?
         pass
 
-    def join(self):
-        """
-        Convert to joined data format
-        """
-        # TODO: Delete?
-        data = StanJoinedData()
-        for offset, ts in enumerate(self['timestamp']):
-            for metric in self.keys():
-                if metric != 'timestamp':
-                    data[ts][metric] = self[metric][offset]
-        return data
-
     def keys(self, starts=None, contains=None):
+        """
+        Custom method for flexible keys filtering
+        :param starts: return keys that starts with
+        :param contains: return keys that contains
+        :return: Iterable of keys
+        """
         if starts and not contains:
             return [key for key in super().keys() if key.startswith(starts)]
         elif contains and not starts:

@@ -1,1 +1,1 @@
-from .data import StanDict, StanFlatData, StanJoinedData
+from .data import StanDict, StanFlatData, StanData
