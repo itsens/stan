@@ -1,4 +1,5 @@
 import abc
+from stan import StanData
 
 
 class ParserError(Exception):
@@ -17,5 +18,5 @@ class Parser(abc.ABC):
         """ Parsing a file """
 
     @abc.abstractmethod
-    def get_stat(self, data_format: str) -> dict:
-        """ Returns stat data """
+    def get_stat(self) -> StanData:
+        """ Returns stat data in StanData structure """
