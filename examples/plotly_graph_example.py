@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from stan.stan.plotter import PlotlyGraph
+from stan.plotter import PlotlyGraph
 import random
 import os
 import time
