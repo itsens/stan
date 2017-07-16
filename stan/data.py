@@ -85,6 +85,10 @@ class StanData(defaultdict):
 
         return result
 
+    def __reduce__(self):
+        t = super().__reduce__()
+        return (t[0], ()) + t[2:]
+
     def relate(self, by: str):
         # TODO: Implement
         pass
@@ -93,10 +97,11 @@ class StanData(defaultdict):
         with open(file_path, 'wb') as pkl:
             pickle.dump(self, pkl, pickle.HIGHEST_PROTOCOL)
 
-    def load(self, file_path: str):
+    @classmethod
+    def load(cls, file_path: str):
         with open(file_path, 'rb') as pkl:
-            tmp = pickle.load(pkl)
-        self.__dict__.update(tmp)
+            return pickle.load(pkl)
+        # self.__dict__.update(tmp)
 
     def append(self, timestamp, stan_dict: StanDict):
         if type(stan_dict) != StanDict:
