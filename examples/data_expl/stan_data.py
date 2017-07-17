@@ -7,7 +7,7 @@ if __name__ == '__main__':
     data_1[1499763761]['metric_1'] = 1
     data_1[1499763761]['metric_2'] = 2
     data_1[1499763761]['metric_3'] = 3
-    data_1.append(1499763762, StanDict(metric_1=1, metric_2=2, metric_3=3))
+    data_1.append(1499763762, StanDict(metric_1=1.1, metric_2=2, metric_3=3))
 
     data_2 = StanData()
     data_2.append(1499763762, StanDict(metric_4=4, metric_5=5, metric_6=6))
@@ -36,3 +36,12 @@ if __name__ == '__main__':
 
     print('\n********* Loaded from file *********')
     pprint(data_4)
+
+    # get relation by 'metric_1'
+    related_data = data_4.relate(by_metric='metric_1', flat=False)
+    print('\n********* Related *********')
+    pprint(related_data)
+
+    related_data = data_4.relate(by_metric='metric_1')
+    print('\n********* Related (flat) *********')
+    pprint(related_data)
