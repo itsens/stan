@@ -4,7 +4,8 @@ import pickle
 
 class StanDict(dict):
     """
-    Is an extended dict()
+    Is an extended dict() with custom method keys() for flexible key filtering
+    and with the ability to stack two entities.
     """
 
     def __add__(self, other):
@@ -46,8 +47,7 @@ class StanDict(dict):
 
 class StanData(defaultdict):
     """
-    Is a defaultdict with StanData as a default_factory.
-    StanData is a dict() of metrics with custom method keys() for flexible key filtering.
+    Is an extended defaultdict() with only StanData as a default_factory.
 
     Format:
     StanData(timestamp1: StanDict,
@@ -101,7 +101,6 @@ class StanData(defaultdict):
     def load(cls, file_path: str):
         with open(file_path, 'rb') as pkl:
             return pickle.load(pkl)
-        # self.__dict__.update(tmp)
 
     def append(self, timestamp, stan_dict: StanDict):
         if type(stan_dict) != StanDict:
