@@ -89,9 +89,36 @@ class StanData(defaultdict):
         t = super().__reduce__()
         return (t[0], ()) + t[2:]
 
-    def relate(self, by: str):
-        # TODO: Implement
-        pass
+    def relate(self, by_metric: str, flat=True):  # Can be slow. Need for test with big data.
+        if by_metric not in self.metrics:
+            raise KeyError('No such metric in data')
+
+        related_data = defaultdict(StanDict)
+
+        for ts in self:
+            if by_metric in self[ts]:
+                for metric in self.metrics:
+                    if metric != by_metric:
+                        related_data[self[ts][by_metric]].setdefault(metric, []).append(self[ts][metric])
+
+        for key in related_data:
+            for metric in related_data[key]:
+                if related_data[key] is not None:
+                    filtered = [val for val in related_data[key][metric] if val is not None]
+                    if len(filtered) > 0:
+                        related_data[key][metric] = sum(filtered) / len(filtered)
+                    else:
+                        related_data[key][metric] = None
+
+        if flat:
+            flt = StanFlatData()
+            for key in sorted(related_data):
+                flt[by_metric].append(key)
+                for metric in related_data[key]:
+                    flt[metric].append(related_data[key][metric])
+            return flt
+
+        return related_data
 
     def save(self, file_path: str):
         with open(file_path, 'wb') as pkl:
