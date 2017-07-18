@@ -16,11 +16,16 @@ class PlotlyGraph:
         self.colors_chain = chain(COLORS)
         self.data = []
         self.layout = Layout(title=graph_title)
+        # self.layout.update(titlefont=dict(size=36))
+        # self.layout.update(width=900, height=500)
+        # self.layout.update(font=dict(family='Courier New, monospace', size=25, color='#7f7f7f'))
+
         self.layout.update(xaxis=dict(title='x_axis', showline=True, showticklabels=True, ticks='outside'))
         self.layout.update(yaxis=dict(title='y_axis', showline=True,
                                       anchor='x', side='left',
                                       showticklabels=True, ticks='outside', separatethousands=True,
                                       exponentformat='none'))
+        self.layout.update(legend=dict(orientation='h', xanchor='middle', y=-0.3))
 
         self.max_y = 0
         self.max_y2 = 0
@@ -53,12 +58,17 @@ class PlotlyGraph:
         self.data.append(Scatter(**scatter_params))
 
         if sma:
-            ma = self._moving_average(y, sma_interval)
+
+            # filtering None values
+            sma_x = [x[offset] for offset, value in enumerate(y) if value is not None]
+            sma_y = [value for value in y if value is not None]
+
+            ma = self._moving_average(sma_y, sma_interval)
             ma_scatter_params = dict()
-            ma_scatter_params['x'] = x[sma_interval:1-sma_interval]
+            ma_scatter_params['x'] = sma_x[sma_interval:1-sma_interval]
             ma_scatter_params['y'] = ma[sma_interval:1-sma_interval]
             ma_scatter_params['line'] = Line(width=2, color=line_color)
-            ma_scatter_params['name'] = name + ' (moving average)'
+            ma_scatter_params['name'] = name + ' (sma)'
             if y2:
                 ma_scatter_params['yaxis'] = 'y2'
             self.data.append(Scatter(**ma_scatter_params))
@@ -79,4 +89,5 @@ class PlotlyGraph:
         plotly.offline.plot(dict(layout=self.layout, data=self.data),
                             filename=file_name, auto_open=False,
                             # image='png', image_filename='io',
-                            image_width=1280, image_height=720)
+                            image_width=700, image_height=450,
+                            show_link=False)

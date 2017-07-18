@@ -15,7 +15,7 @@ if __name__ == '__main__':
     start_gen_data = int(time.time()*1000)
     data_1 = [[x for x in range(test_time)], [random.choice(range(60, 80)) for x in range(test_time)]]
     data_2 = [[x for x in range(test_time)], [random.choice(range(20, 25)) for x in range(test_time)]]
-    data_3 = [[x for x in range(test_time)], [random.choice(range(30, 55)) for x in range(test_time)]]
+    data_3 = [[x for x in range(test_time)], [random.choice([31, 32, 33, 34, 35, None]) for x in range(test_time)]]
     end_of_gen_data = int(time.time()*1000)
     print('Data generated in {} ms'.format(end_of_gen_data-start_gen_data))
 
