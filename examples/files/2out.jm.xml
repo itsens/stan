@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="810" it="0" lt="389" ct="360" ts="1500629532490" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="73750" sby="1212" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">1.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="488" it="0" lt="70" ct="51" ts="1500629532823" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="73758" sby="1212" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">5.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="1738" it="0" lt="1397" ct="1373" ts="1500629532157" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="" by="73750" sby="1212" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">9.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="30" it="0" lt="30" ct="5" ts="1500629535695" s="true" lb="get documents" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="UTF-8" by="20012" sby="584" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">13.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="22" it="0" lt="21" ct="0" ts="1500629535727" s="true" lb="get drafts" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="UTF-8" by="9469" sby="704" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">14.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts</java.net.URL>
+</httpSample>
+<httpSample t="75" it="0" lt="0" ct="0" ts="1500629535750" s="true" lb="upload 0" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="695" sby="513386" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">15.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<httpSample t="113" it="0" lt="113" ct="0" ts="1500629535826" s="true" lb="upload 1" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="UTF-8" by="1101" sby="115586" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">16.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<sample t="188" it="2" lt="113" ct="0" ts="1500629535750" s="true" lb="Transaction Controller" rc="200" rm="Number of samples in transaction : 2, number of failing samples : 0" tn="tg non formal 611 kb 1-3" dt="" de="" by="1796" sby="628972" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">17.unknown</responseFile>
+</sample>
+<httpSample t="49" it="0" lt="49" ct="6" ts="1500629535938" s="true" lb="get documents" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="UTF-8" by="20004" sby="584" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">18.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="17" it="0" lt="17" ct="0" ts="1500629535988" s="true" lb="get drafts" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="UTF-8" by="9466" sby="704" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">19.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts</java.net.URL>
+</httpSample>
+<httpSample t="78" it="0" lt="0" ct="0" ts="1500629536006" s="true" lb="upload 0" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="695" sby="513386" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">20.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<httpSample t="146" it="0" lt="146" ct="0" ts="1500629536085" s="true" lb="upload 1" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="UTF-8" by="1101" sby="115586" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">21.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<sample t="224" it="2" lt="146" ct="0" ts="1500629536006" s="true" lb="Transaction Controller" rc="200" rm="Number of samples in transaction : 2, number of failing samples : 0" tn="tg non formal 611 kb 1-1" dt="" de="" by="1796" sby="628972" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">22.unknown</responseFile>
+</sample>
+<httpSample t="26" it="0" lt="26" ct="5" ts="1500629536221" s="true" lb="get documents" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="UTF-8" by="20005" sby="584" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">23.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="19" it="0" lt="19" ct="0" ts="1500629536248" s="true" lb="get drafts" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="UTF-8" by="9456" sby="704" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">24.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts</java.net.URL>
+</httpSample>
+<httpSample t="81" it="0" lt="0" ct="0" ts="1500629536269" s="true" lb="upload 0" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="695" sby="513386" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">25.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<httpSample t="193" it="0" lt="193" ct="0" ts="1500629536351" s="true" lb="upload 1" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="UTF-8" by="1101" sby="115586" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">26.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<sample t="274" it="3" lt="193" ct="0" ts="1500629536268" s="true" lb="Transaction Controller" rc="200" rm="Number of samples in transaction : 2, number of failing samples : 0" tn="tg non formal 611 kb 1-2" dt="" de="" by="1796" sby="628972" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">27.unknown</responseFile>
+</sample>
+<httpSample t="55" it="0" lt="55" ct="0" ts="1500629537005" s="true" lb="companies" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="1699" sby="588" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">28.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/companies?term=010&amp;_=1500629531989%20HTTP/1.1</java.net.URL>
+</httpSample>
+<httpSample t="51" it="0" lt="51" ct="0" ts="1500629537792" s="true" lb="companies" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="1233" sby="588" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">29.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/companies?term=008&amp;_=1500629531989%20HTTP/1.1</java.net.URL>
+</httpSample>
+<httpSample t="57" it="0" lt="57" ct="6" ts="1500629538047" s="true" lb="companies" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="" by="1724" sby="588" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">30.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/companies?term=007&amp;_=1500629531989%20HTTP/1.1</java.net.URL>
+</httpSample>
+<httpSample t="93" it="0" lt="0" ct="5" ts="1500629538686" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">31.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/4355a832-586b-4fdf-b60e-79efd6e66f4b</java.net.URL>
+</httpSample>
+<httpSample t="72" it="0" lt="0" ct="0" ts="1500629538780" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">32.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/4355a832-586b-4fdf-b60e-79efd6e66f4b</java.net.URL>
+</httpSample>
+<httpSample t="98" it="0" lt="0" ct="5" ts="1500629539178" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">33.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/8daa58bd-9106-4696-9e09-0cf96fde45e8</java.net.URL>
+</httpSample>
+<httpSample t="84" it="0" lt="0" ct="0" ts="1500629539277" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">34.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/8daa58bd-9106-4696-9e09-0cf96fde45e8</java.net.URL>
+</httpSample>
+<httpSample t="88" it="0" lt="0" ct="5" ts="1500629540212" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">35.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/140ed31f-0bce-4738-b6cf-5fb9c8fc751d</java.net.URL>
+</httpSample>
+<httpSample t="67" it="0" lt="0" ct="0" ts="1500629540300" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">36.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/140ed31f-0bce-4738-b6cf-5fb9c8fc751d</java.net.URL>
+</httpSample>
+<httpSample t="113" it="0" lt="113" ct="0" ts="1500629540359" s="true" lb="sign" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="2690" sby="632" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">37.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/sign</java.net.URL>
+</httpSample>
+<httpSample t="153" it="0" lt="153" ct="5" ts="1500629541570" s="true" lb="sign" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="2690" sby="632" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">38.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/sign</java.net.URL>
+</httpSample>
+<httpSample t="81" it="0" lt="81" ct="44" ts="1500629543080" s="true" lb="hash signature" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="utf-8" by="3371" sby="2089" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">39.json</responseFile>
+  <java.net.URL>https://127.0.0.1:61612/hash/signature</java.net.URL>
+</httpSample>
+<httpSample t="100" it="0" lt="100" ct="7" ts="1500629543320" s="true" lb="sign" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="" by="2690" sby="632" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">40.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/sign</java.net.URL>
+</httpSample>
+<httpSample t="57" it="0" lt="57" ct="39" ts="1500629543509" s="true" lb="hash signature" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="utf-8" by="3371" sby="2089" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">41.json</responseFile>
+  <java.net.URL>https://127.0.0.1:61612/hash/signature</java.net.URL>
+</httpSample>
+<httpSample t="237" it="0" lt="0" ct="5" ts="1500629544694" s="true" lb="drafts send" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="676" sby="3606" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">42.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/send</java.net.URL>
+</httpSample>
+<httpSample t="60" it="0" lt="60" ct="40" ts="1500629545873" s="true" lb="hash signature" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="utf-8" by="3371" sby="2089" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">43.json</responseFile>
+  <java.net.URL>https://127.0.0.1:61612/hash/signature</java.net.URL>
+</httpSample>
+<httpSample t="178" it="0" lt="0" ct="6" ts="1500629546037" s="true" lb="drafts send" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="676" sby="3606" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">44.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/send</java.net.URL>
+</httpSample>
+<httpSample t="158" it="0" lt="0" ct="6" ts="1500629547463" s="true" lb="drafts send" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="676" sby="3606" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">45.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/send</java.net.URL>
+</httpSample>
+<httpSample t="508" it="0" lt="36" ct="8" ts="1500629547822" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="73672" sby="1558" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">46.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="446" it="0" lt="29" ct="7" ts="1500629548883" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="73672" sby="1558" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">50.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="405" it="0" lt="22" ct="0" ts="1500629549356" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="" by="73664" sby="1558" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">54.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="27" it="0" lt="27" ct="6" ts="1500629549885" s="true" lb="get documents" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="UTF-8" by="19997" sby="584" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">58.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="18" it="0" lt="18" ct="0" ts="1500629549913" s="true" lb="get drafts" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="UTF-8" by="9462" sby="704" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">59.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts</java.net.URL>
+</httpSample>
+<httpSample t="79" it="0" lt="0" ct="0" ts="1500629549932" s="true" lb="upload 0" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="695" sby="513386" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">60.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<httpSample t="113" it="0" lt="113" ct="0" ts="1500629550013" s="true" lb="upload 1" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="UTF-8" by="1101" sby="115586" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">61.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<sample t="192" it="4" lt="113" ct="0" ts="1500629549932" s="true" lb="Transaction Controller" rc="200" rm="Number of samples in transaction : 2, number of failing samples : 0" tn="tg non formal 611 kb 1-3" dt="" de="" by="1796" sby="628972" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">62.unknown</responseFile>
+</sample>
+<httpSample t="45" it="0" lt="45" ct="5" ts="1500629551262" s="true" lb="get documents" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="UTF-8" by="20005" sby="584" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">63.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="66" it="0" lt="66" ct="0" ts="1500629551243" s="true" lb="companies" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="1233" sby="588" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">64.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/companies?term=004&amp;_=1500629531989%20HTTP/1.1</java.net.URL>
+</httpSample>
+<httpSample t="17" it="0" lt="17" ct="0" ts="1500629551308" s="true" lb="get drafts" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="UTF-8" by="9456" sby="704" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">65.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts</java.net.URL>
+</httpSample>
+<httpSample t="65" it="0" lt="0" ct="0" ts="1500629551326" s="true" lb="upload 0" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="695" sby="513386" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">66.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<httpSample t="177" it="0" lt="177" ct="0" ts="1500629551392" s="true" lb="upload 1" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="UTF-8" by="1101" sby="115586" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">67.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<sample t="242" it="2" lt="177" ct="0" ts="1500629551326" s="true" lb="Transaction Controller" rc="200" rm="Number of samples in transaction : 2, number of failing samples : 0" tn="tg non formal 611 kb 1-1" dt="" de="" by="1796" sby="628972" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">68.unknown</responseFile>
+</sample>
+<httpSample t="29" it="0" lt="29" ct="6" ts="1500629551799" s="true" lb="get documents" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="UTF-8" by="20004" sby="584" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">69.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="18" it="0" lt="18" ct="0" ts="1500629551829" s="true" lb="get drafts" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="UTF-8" by="9466" sby="704" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">70.html</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts</java.net.URL>
+</httpSample>
+<httpSample t="81" it="0" lt="0" ct="0" ts="1500629551848" s="true" lb="upload 0" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="695" sby="513386" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">71.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<httpSample t="148" it="0" lt="148" ct="0" ts="1500629551930" s="true" lb="upload 1" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="UTF-8" by="1101" sby="115586" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">72.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/upload/o_V4jwzrDnedZHEo2Avh8TGN41DQp6WyhE</java.net.URL>
+</httpSample>
+<sample t="229" it="3" lt="148" ct="0" ts="1500629551848" s="true" lb="Transaction Controller" rc="200" rm="Number of samples in transaction : 2, number of failing samples : 0" tn="tg non formal 611 kb 1-2" dt="" de="" by="1796" sby="628972" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">73.unknown</responseFile>
+</sample>
+<httpSample t="42" it="0" lt="42" ct="0" ts="1500629553415" s="true" lb="companies" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="1233" sby="588" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">74.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/companies?term=005&amp;_=1500629531989%20HTTP/1.1</java.net.URL>
+</httpSample>
+<httpSample t="126" it="0" lt="0" ct="5" ts="1500629553396" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">75.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/9ef6569f-0650-4ac3-832c-b04ff4df1a22</java.net.URL>
+</httpSample>
+<httpSample t="82" it="0" lt="0" ct="0" ts="1500629553522" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-3" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">76.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/9ef6569f-0650-4ac3-832c-b04ff4df1a22</java.net.URL>
+</httpSample>
+<httpSample t="54" it="0" lt="54" ct="5" ts="1500629554066" s="true" lb="companies" rc="200" rm="OK" tn="tg non formal 611 kb 1-1" dt="text" de="" by="1724" sby="588" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">77.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/companies?term=007&amp;_=1500629531989%20HTTP/1.1</java.net.URL>
+</httpSample>
+<httpSample t="98" it="0" lt="0" ct="5" ts="1500629555032" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">78.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/fcc8bc69-bdf4-4123-8e47-29ccc6e44ca4</java.net.URL>
+</httpSample>
+<httpSample t="70" it="0" lt="0" ct="0" ts="1500629555131" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-2" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">79.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/fcc8bc69-bdf4-4123-8e47-29ccc6e44ca4</java.net.URL>
+</httpSample>
+<httpSample t="81" it="0" lt="0" ct="0" ts="1500629555308" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">80.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/43d9e6e7-e64b-420b-9a10-87757382db91</java.net.URL>
+</httpSample>
+<httpSample t="89" it="0" lt="0" ct="0" ts="1500629555390" s="true" lb="draftId g1" rc="204" rm="No Content" tn="tg non formal 611 kb 1-1" dt="" de="" by="676" sby="757" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">81.unknown</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/43d9e6e7-e64b-420b-9a10-87757382db91</java.net.URL>
+</httpSample>
+<httpSample t="132" it="0" lt="132" ct="0" ts="1500629555388" s="true" lb="sign" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="2690" sby="632" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">82.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/sign</java.net.URL>
+</httpSample>
+<httpSample t="108" it="0" lt="108" ct="6" ts="1500629557686" s="true" lb="sign" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="2690" sby="632" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">83.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/drafts/sign</java.net.URL>
+</httpSample>
+</testResults>

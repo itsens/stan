@@ -1,7 +1,15 @@
+from pprint import pprint
+
 __autor__ = 'borodenkov.e.a@gmail.com'
 
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
+from tqdm import tqdm
+from stan import StanData, StanDict
+import datetime
+
+
+TIMESTAMP = 0 # сюда ложим первую временную метку
 
 
 class JmeterXmlParser(Parser):
@@ -15,7 +23,11 @@ class JmeterXmlParser(Parser):
     </httpSample>
 
     """
+
     def __init__(self):
+
+        self.sampling_interval = 's'  # интервал для агригации данных по временной меткке
+
         self.file_path = None
         self.stat_length = None
 
@@ -35,11 +47,23 @@ class JmeterXmlParser(Parser):
                         'sent_bytes': 'sby',
                         'error_count': 'ec'
                         }
+
+        self.stat = dict(loadtime=[],
+                         latency=[],
+                         connect_time=[],
+                         timestamp=[],
+                         label=[],
+                         tread_group=[],
+                         size_in_bytes=[],
+                         sent_bytes=[],
+                         error_count=[])
+
         self.load_time = list()  # Load time: 115
         self.it = list()
         self.latency = list()  # Latency: 89
         self.connect_time = list()  # Connect Time: 51
         self.timestamp = list()
+        self.timestamp2 = list()
         self.s = list()  # "true"
         self.label = list()  # "HTTPR: login"
         self.rm = list()  # "OK"
@@ -53,6 +77,33 @@ class JmeterXmlParser(Parser):
         self.ng = list()  # "1"
         self.na = list()  # "1"
         self.hn = list()  # "MSK-W0680" >
+
+        self.rps = list()
+
+        self._connections_start_times = dict()
+        self._success_tcp_connections = set()
+        self._success_ssl_connections = set()
+        self._failed_req_rsp_connections = set()
+
+
+    # ght
+    def _get_time_interval(self, timestamp: int) -> int:
+        """
+        "Round" the timestamp to the specified interval
+
+        :param timestamp:
+        :return: time interval timestamp (Unix time)
+        """
+        # TODO: Expand the supported averaging intervals
+        if self.sampling_interval == 's':
+            return timestamp / 1000
+
+
+    def _process_operation(self, operation: list):
+        operation_timestamp = int(operation[TIMESTAMP])
+        operation_time_interval = self._get_time_interval(operation_timestamp)
+
+
 
     def parse(self, file_path: str):
         if self.file_path is not None:
@@ -74,7 +125,7 @@ class JmeterXmlParser(Parser):
                     elif attribute == self.metrics['latency']:
                         self.latency.append(int(attributes[attribute]))
                     elif attribute == self.metrics['timestamp']:
-                        self.timestamp.append(int(attributes[attribute]))
+                        self.timestamp.append(int(attributes[attribute]))  # fixme преобразование  в UNIX формат
                     elif attribute == self.metrics['connect_time']:
                         self.connect_time.append(int(attributes[attribute]))
                     elif attribute == self.metrics['label']:
@@ -85,6 +136,31 @@ class JmeterXmlParser(Parser):
                         self.sent_bytes.append(int(attributes[attribute]))
                     elif attribute == self.metrics['error_count']:
                         self.error_count.append(int(attributes[attribute]))
+
+
+
+        # убираем микросекунды
+        self.timestamp2 = [int(number / 1000) for number in self.timestamp]  # fixme вынести в функци
+
+        # группируем
+
+    #
+    #     self.rps = self._get_rps(self.timestamp2)
+    #     print(self.rps)
+    #
+    # def _get_rps(self, timestamp, MIN_THRSH=3):
+    #     res = [] # сюда сохраним результирующий список
+    #     current_chunk_idx = None
+    #     for i, dt in enumerate(timestamp):
+    #         print(i)
+    #         print(dt)
+    #         if (i == 0 or ((dt - timestamp[current_chunk_idx]).seconds / 1) > MIN_THRSH):
+    #             # res.append([dt.strftime('%H:%M:%s'), 1])
+    #             res.append([dt.strftime, 1])
+    #             current_chunk_idx = i
+    #         else:
+    #             res[-1][1] += 1
+    #     return res
 
     def get_stat(self, data_format='flat', time_zone_correction=0):
         """
@@ -111,7 +187,30 @@ class JmeterXmlParser(Parser):
                         by=self.size_in_byte,
                         sby=self.sent_bytes,
                         ec=self.error_count,
-                        ts=self.timestamp)
+                        ts=self.timestamp2)
         elif data_format == 'joined':
             # TODO: реализовать
             return self.data
+
+
+'''
+
+viewe example
+1489489403: {'active_ssl_connections_count': 3,
+             'active_tcp_connections_count': 3,
+             'connection_times': 0.0,
+             'failed_req_per_second': 0,
+             'failed_rsp_per_second': 0,
+             'failed_ssl_per_second': 0,
+             'failed_tcp_per_second': 0,
+             'failed_total_per_second': 0,
+             'req_per_second': 0,
+             'rsp_per_second': 0,
+             'ssl_connections_per_second': 0,
+             'ssl_handshake_times': 0.0,
+             'tcp_connections_per_second': 0,
+             'tcp_times': 0.0,
+             'throughput_download': 1687552,
+             'throughput_upload': 0,
+             'ttfb_times': 0.0}}
+'''

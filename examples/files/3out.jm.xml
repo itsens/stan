@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="810" it="0" lt="389" ct="360" ts="1500629532490" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-2" dt="text" de="" by="73750" sby="1212" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">1.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+<httpSample t="488" it="0" lt="70" ct="51" ts="1500629532823" s="true" lb="login" rc="200" rm="OK" tn="tg non formal 611 kb 1-3" dt="text" de="" by="73758" sby="1212" sc="1" ec="0" ng="3" na="3" hn="MSK-W0680">
+  <responseFile class="java.lang.String">5.json</responseFile>
+  <java.net.URL>https://integrationb2b.iitrust.ru/edi/documents</java.net.URL>
+</httpSample>
+</testResults>
