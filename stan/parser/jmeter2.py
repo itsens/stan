@@ -1,6 +1,6 @@
 from pprint import pprint
 
-__autor__ = 'borodenkov.e.a@gmail.com'
+__author__ = 'borodenkov.e.a@gmail.com'
 
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse

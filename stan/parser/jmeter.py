@@ -1,6 +1,6 @@
 from pprint import pprint
 
-__autor__ = 'borodenkov.e.a@gmail.com'
+__author__ = 'borodenkov.e.a@gmail.com'
 
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
@@ -8,8 +8,7 @@ from tqdm import tqdm
 from stan import StanData, StanDict
 import datetime
 
-
-TIMESTAMP = 0 # сюда ложим первую временную метку
+TIMESTAMP = 0  # сюда ложим первую временную метку
 
 
 class JmeterXmlParser(Parser):
@@ -85,8 +84,7 @@ class JmeterXmlParser(Parser):
         self._success_ssl_connections = set()
         self._failed_req_rsp_connections = set()
 
-
-    # ght
+    # todo: для чего нужен этот перевод?
     def _get_time_interval(self, timestamp: int) -> int:
         """
         "Round" the timestamp to the specified interval
@@ -98,12 +96,9 @@ class JmeterXmlParser(Parser):
         if self.sampling_interval == 's':
             return timestamp / 1000
 
-
     def _process_operation(self, operation: list):
         operation_timestamp = int(operation[TIMESTAMP])
         operation_time_interval = self._get_time_interval(operation_timestamp)
-
-
 
     def parse(self, file_path: str):
         if self.file_path is not None:
@@ -137,30 +132,8 @@ class JmeterXmlParser(Parser):
                     elif attribute == self.metrics['error_count']:
                         self.error_count.append(int(attributes[attribute]))
 
-
-
         # убираем микросекунды
         self.timestamp2 = [int(number / 1000) for number in self.timestamp]  # fixme вынести в функци
-
-        # группируем
-
-    #
-    #     self.rps = self._get_rps(self.timestamp2)
-    #     print(self.rps)
-    #
-    # def _get_rps(self, timestamp, MIN_THRSH=3):
-    #     res = [] # сюда сохраним результирующий список
-    #     current_chunk_idx = None
-    #     for i, dt in enumerate(timestamp):
-    #         print(i)
-    #         print(dt)
-    #         if (i == 0 or ((dt - timestamp[current_chunk_idx]).seconds / 1) > MIN_THRSH):
-    #             # res.append([dt.strftime('%H:%M:%s'), 1])
-    #             res.append([dt.strftime, 1])
-    #             current_chunk_idx = i
-    #         else:
-    #             res[-1][1] += 1
-    #     return res
 
     def get_stat(self, data_format='flat', time_zone_correction=0):
         """
@@ -213,4 +186,34 @@ viewe example
              'throughput_download': 1687552,
              'throughput_upload': 0,
              'ttfb_times': 0.0}}
+'''
+
+
+'''
+12.7 Sample Attributes¶
+
+The sample attributes have the following meaning:
+
+Attribute	Content
+by	Bytes
+sby	Sent Bytes
+de	Data encoding
+dt	Data type
+ec	Error count (0 or 1, unless multiple samples are aggregated)
+hn	Hostname where the sample was generated
+it	Idle Time = time not spent sampling (milliseconds) (generally 0)
+lb	Label
+lt	Latency = time to initial response (milliseconds) - not all samplers support this
+ct	Connect Time = time to establish the connection (milliseconds) - not all samplers support this
+na	Number of active threads for all thread groups
+ng	Number of active threads in this group
+rc	Response Code (e.g. 200)
+rm	Response Message (e.g. OK)
+s	Success flag (true/false)
+sc	Sample count (1, unless multiple samples are aggregated)
+t	Elapsed time (milliseconds)
+tn	Thread Name
+ts	timeStamp (milliseconds since midnight Jan 1, 1970 UTC)
+varname	Value of the named variable
+
 '''
