@@ -119,8 +119,8 @@ class SarXmlParser(Parser):
                 self._parse_network(list(element))
             elif element.tag == 'filesystems' and 'fs' in sections:
                 self._parse_filesystems(list(element))
-            elif element.tag == 'queue' and 'ldavg' in sections:
-                self._parse_ldfvg(element)
+            elif element.tag == 'queue' and 'queue' in sections:
+                self._parse_queue(element)
 
     def _parse_cpu(self, element_list):
         """
@@ -201,7 +201,7 @@ class SarXmlParser(Parser):
                     metric_key = 'fs_' + attributes['fsname'].split('/')[-1] + '_' + attribute
                     self.__metrics[metric_key] = float(attributes[attribute].replace(',', '.'))
 
-    def _parse_ldfvg(self, elements):
+    def _parse_queue(self, elements):
         '''
         Private method for parse filesystems section
 

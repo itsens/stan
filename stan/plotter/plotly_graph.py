@@ -21,7 +21,8 @@ class PlotlyGraph:
         # self.layout.update(font=dict(family='Courier New, monospace', size=25, color='#7f7f7f'))
         # self.layout()
 
-        self.layout.update(xaxis=dict(title='x_axis', showline=True, showticklabels=True, ticks='outside', separatethousands=True))
+        self.layout.update(xaxis=dict(title='x_axis', showline=True, showticklabels=True, ticks='outside',
+                                      separatethousands=True))
         self.layout.update(yaxis=dict(title='y_axis', showline=True,
                                       anchor='x', side='left',
                                       showticklabels=True, ticks='outside', separatethousands=True,

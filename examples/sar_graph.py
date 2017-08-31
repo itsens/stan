@@ -32,7 +32,7 @@ def cpu(stan_data, hostname):
 
 def mem(stan_data, hostname):
     plot_file_name = GRAPH_DIR + 'mem_' + hostname + '.html'
-    gr = PlotlyGraph('mem ' + hostname)
+    gr = PlotlyGraph('Утилиазация памяти ' + hostname)
 
     gb_free = [y / 1024 / 1024 for y in stan_data['mem_memfree']]
     gb_used = [y / 1024 / 1024 for y in stan_data['mem_memused']]
@@ -42,9 +42,9 @@ def mem(stan_data, hostname):
     x = [x for x in range(len(stan_data['index']))]
 
     gr.append_data('Доступно памяти', x=x, y=gb_free)
-    gr.append_data('Используется памяти', x=x, y=gb_used)
+    gr.append_data('Утилизация памяти', x=x, y=gb_used)
     gr.append_data('Доступно файла подкачки', x=x, y=gb_swpfree)
-    gr.append_data('Использование файла подкачки', x=x, y=gb_swpused)
+    gr.append_data('Утилизация файла подкачки', x=x, y=gb_swpused)
     gr.sign_axes(x_sign=X_SIGN, y_sign='Утилизация памяти, gbmem')
     gr.plot(plot_file_name)
 
@@ -70,11 +70,18 @@ def io_bytes(stan_data, hostname):
     gr.plot(plot_file_name)
 
 
-def ldfvg(stan_data, hostname):
+def queue(stan_data, hostname):
     # TODO: 'ldavg-1'
     # 'ldavg-5'
     # 'ldavg-15'
-    pass
+    plot_file_name = GRAPH_DIR + 'ldavg_' + hostname + '.html'
+    gr = PlotlyGraph('Load Averege' + hostname)
+    x = [x for x in range(len(stan_data['index']))]
+    gr.append_data('ldavg-1', x=x, y=stan_data['queue_ldavg-1'])#, sma=True, sma_interval=10)
+    gr.append_data('ldavg-5', x=x, y=stan_data['queue_ldavg-5'])#, sma=True, sma_interval=10)
+    gr.append_data('ldavg-15', x=x, y=stan_data['queue_ldavg-15'])#, sma=True, sma_interval=10)
+    gr.sign_axes(x_sign=X_SIGN, y_sign='ldavg, ед.')
+    gr.plot(plot_file_name)
 
 
 def net(stan_data, hostname):
@@ -91,9 +98,12 @@ if __name__ == '__main__':
     stat = sar.SarXmlParser()
     stat.parse(TEST_XML)
     stan_data = stat.get_stat()
-    # pprint(stan_data.metrics)
-    # print(len(stan_data['index']))
-    cpu(stan_data=stan_data.flat(), hostname=stat.hostname)
-    mem(stan_data=stan_data.flat(), hostname=stat.hostname)
-    io(stan_data=stan_data.flat(), hostname=stat.hostname)
-    io_bytes(stan_data=stan_data.flat(), hostname=stat.hostname)
+    pprint(stan_data.metrics)
+    ss = stan_data.flat()
+
+    cpu(stan_data=ss, hostname=stat.hostname)
+    mem(stan_data=ss, hostname=stat.hostname)
+    io(stan_data=ss, hostname=stat.hostname)
+    io_bytes(stan_data=ss, hostname=stat.hostname)
+    queue(stan_data=ss, hostname=stat.hostname)
+
