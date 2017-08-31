@@ -46,13 +46,13 @@ class SarXmlParser(Parser):
         self.data = StanData()
         self.__metrics = None
 
-    def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io', 'disk', 'net', 'fs'}):
+    def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io', 'disk', 'net', 'fs', 'queue'}):
         if self.file_path is not None:  # instance reset for repeated usage
             self.__init__()
 
         self.file_path = file_path
 
-        if not sections.issubset({'cpu', 'mem', 'io', 'disk', 'net', 'fs'}):
+        if not sections.issubset({'cpu', 'mem', 'io', 'disk', 'net', 'fs', 'queue'}):
             raise ParserError('Incorrect sections')
 
         # Calc stat length by "timestamp" tag. Needed for progress bar (tqdm).
@@ -119,6 +119,8 @@ class SarXmlParser(Parser):
                 self._parse_network(list(element))
             elif element.tag == 'filesystems' and 'fs' in sections:
                 self._parse_filesystems(list(element))
+            elif element.tag == 'queue' and 'queue' in sections:
+                self._parse_queue(element)
 
     def _parse_cpu(self, element_list):
         """
@@ -132,7 +134,7 @@ class SarXmlParser(Parser):
                     metric_key = 'cpu_' + attributes['number'] + '_' + attribute
                     self.__metrics[metric_key] = float(attributes[attribute].replace(',', '.'))
             metric_key = 'cpu_' + attributes['number'] + '_util'
-            self.__metrics[metric_key] = 100.0-float(attributes['idle'].replace(',', '.'))
+            self.__metrics[metric_key] = 100.0 - float(attributes['idle'].replace(',', '.'))
 
     def _parse_mem(self, element_list):
         """
@@ -198,6 +200,18 @@ class SarXmlParser(Parser):
                 if attribute != 'fsname':
                     metric_key = 'fs_' + attributes['fsname'].split('/')[-1] + '_' + attribute
                     self.__metrics[metric_key] = float(attributes[attribute].replace(',', '.'))
+
+    def _parse_queue(self, elements):
+        '''
+        Private method for parse filesystems section
+
+        <queue runq-sz="0" plist-sz="452" ldavg-1="0,06" ldavg-5="0,14" ldavg-15="0,17" blocked="0"/>
+        :param elements: section context
+        '''
+        attributes = elements.attrib
+        for attribute in attributes:
+            metric_key = 'queue_' + attribute
+            self.__metrics[metric_key] = float(attributes[attribute].replace(',', '.'))
 
     def get_stat(self):
         """
