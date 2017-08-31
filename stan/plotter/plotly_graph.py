@@ -15,12 +15,13 @@ class PlotlyGraph:
     def __init__(self, graph_title):
         self.colors_chain = chain(COLORS)
         self.data = []
-        self.layout = Layout(title=graph_title)
+        self.layout = Layout(title=graph_title, separators=', ')
         # self.layout.update(titlefont=dict(size=36))
         # self.layout.update(width=900, height=500)
         # self.layout.update(font=dict(family='Courier New, monospace', size=25, color='#7f7f7f'))
+        # self.layout()
 
-        self.layout.update(xaxis=dict(title='x_axis', showline=True, showticklabels=True, ticks='outside'))
+        self.layout.update(xaxis=dict(title='x_axis', showline=True, showticklabels=True, ticks='outside', separatethousands=True))
         self.layout.update(yaxis=dict(title='y_axis', showline=True,
                                       anchor='x', side='left',
                                       showticklabels=True, ticks='outside', separatethousands=True,

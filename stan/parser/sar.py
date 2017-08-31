@@ -46,13 +46,13 @@ class SarXmlParser(Parser):
         self.data = StanData()
         self.__metrics = None
 
-    def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io', 'disk', 'net', 'fs', 'ldavg'}):
+    def parse(self, file_path: str, sections: set = {'cpu', 'mem', 'io', 'disk', 'net', 'fs', 'queue'}):
         if self.file_path is not None:  # instance reset for repeated usage
             self.__init__()
 
         self.file_path = file_path
 
-        if not sections.issubset({'cpu', 'mem', 'io', 'disk', 'net', 'fs', 'ldavg'}):
+        if not sections.issubset({'cpu', 'mem', 'io', 'disk', 'net', 'fs', 'queue'}):
             raise ParserError('Incorrect sections')
 
         # Calc stat length by "timestamp" tag. Needed for progress bar (tqdm).
