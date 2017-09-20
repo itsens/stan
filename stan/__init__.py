@@ -1,1 +1,1 @@
-from .data import StanDict, StanFlatData, StanData
+from .core import StanDict, StanFlatData, StanData
