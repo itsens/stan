@@ -47,7 +47,7 @@ class StanDict(dict):
 
 class StanData(defaultdict):
     """
-    Is an extended defaultdict() with only StanData as a default_factory.
+    Is an extended defaultdict() with only StanDict as a default_factory.
 
     Format:
     StanData(timestamp1: StanDict,
