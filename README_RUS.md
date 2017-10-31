@@ -54,3 +54,38 @@
 
 ## Модуль PLOTTER
 Предоставляет упрощенный интерфейс для отрисовки графиков. Стандартизирует шаблоны графиков.
+
+# User Guide
+Предполагаемый цикл использования библиотеки выглядит так:
+
+```
+from stan.parser import TlsmCsvParser
+from stan.parser import SarXmlParser
+from stan.plotter import PlotlyGraph
+
+
+TLSM_FILES = 'path_to_tlsm_csv_file_or_files'
+SAR_FILE = 'path_to_sar_xml_file'
+PLOT_FILE_NAME = 'path_to_graph_file'
+
+tlsm_parser = TlsmCsvParser()
+tlsm_parser.parse(TLSM_FILES)
+tlsm_stat = tlsm_parser.get_stat()
+
+sar_parser = SarXmlParser()
+sar_parser.parse(SAR_FILE)
+sar_stat = sar_parser.get_stat()
+
+total_stat = tlsm_stat + sar_stat
+flat_stat = total_stat.flat()
+
+graph = PlotlyGraph('GRAPH_HEADER')
+graph.append_data('METRIC_1', flat_stat['index'], flat_stat['metric_1'])
+graph.append_data('METRIC_2', flat_stat['index'], flat_stat['metric_2'], y2=True)
+graph.append_data('METRIC_3', flat_stat['index'], flat_stat['metric_3'], sma=True, sma_interval=10)
+graph.sign_axes(x_sign='Time, s', y_sign='new title for y', y2_sign='new title for y2')
+graph.plot(PLOT_FILE_NAME)
+```
+
+# Development Guide
+TBC...
