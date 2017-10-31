@@ -26,11 +26,13 @@
 
 Предназначен для хранения данных и манипуляций с ними. Эта структура должна быть на выходе в результате работы парсера.
 ##### Формат:
-	StanData(timestamp1: StanDict,
-             timestamp2: StanDict,
-             timestamp3: StanDict,
-             ...)
-	
+```
+StanData(timestamp1: StanDict,
+         timestamp2: StanDict,
+         timestamp3: StanDict,
+         ...)
+```
+
 #### StanFlatData(defaultdict)
 Формализует структуру данных. Наследует defaultdict. При этом принудительно во время инициализации использует list, как default_factory.
 
@@ -38,10 +40,12 @@
 
 Эта структура генерируется в результате вызова методов flat() или relate() класса StanData.
 ##### Формат:
-    StanFlatData(metric1=[],
-                 metric2=[],
-                 metric3=[],
-                 ...)
+```
+StanFlatData(metric1=[],
+             metric2=[],
+             metric3=[],
+             ...)
+```
 
 ## Модуль PARSER
 Формализует интерфейс парсеров и содержит непосредственно сами реализации парсеров для различных утилит.
@@ -53,7 +57,7 @@
 	1. Sar
 
 ## Модуль PLOTTER
-Предоставляет упрощенный интерфейс для отрисовки графиков. Стандартизирует шаблоны графиков.
+Предоставляет упрощенный интерфейс для формирования графиков. Стандартизирует шаблоны графиков.
 
 # User Guide
 Предполагаемый цикл использования библиотеки выглядит так:
@@ -64,21 +68,27 @@ from stan.parser import SarXmlParser
 from stan.plotter import PlotlyGraph
 
 
+# Пути к файлам
 TLSM_FILES = 'path_to_tlsm_csv_file_or_files'
 SAR_FILE = 'path_to_sar_xml_file'
 PLOT_FILE_NAME = 'path_to_graph_file'
 
+
+# Парсинг результатов утилиты НТ
 tlsm_parser = TlsmCsvParser()
 tlsm_parser.parse(TLSM_FILES)
 tlsm_stat = tlsm_parser.get_stat()
 
+# Парсинг результатов утилиты сбора показателей здоровья объекта тестирования
 sar_parser = SarXmlParser()
 sar_parser.parse(SAR_FILE)
 sar_stat = sar_parser.get_stat()
 
+# Объединение метрик в единую структуру и перевод в удобный формат для формирования графиков
 total_stat = tlsm_stat + sar_stat
 flat_stat = total_stat.flat()
 
+# Формирование графика
 graph = PlotlyGraph('GRAPH_HEADER')
 graph.append_data('METRIC_1', flat_stat['index'], flat_stat['metric_1'])
 graph.append_data('METRIC_2', flat_stat['index'], flat_stat['metric_2'], y2=True)
@@ -87,5 +97,21 @@ graph.sign_axes(x_sign='Time, s', y_sign='new title for y', y2_sign='new title f
 graph.plot(PLOT_FILE_NAME)
 ```
 
-# Development Guide
-TBC...
+# Parser development guide
+Любой парсер должен наследовать класс Parser:
+```
+class Parser(abc.ABC):
+
+    @abc.abstractmethod
+    def parse(self, file_path: str):
+        """ Parsing a file """
+
+    @abc.abstractmethod
+    def get_stat(self) -> StanData:
+        """ Returns stat data in StanData structure """
+```
+Данный класс формализует интерфейс парсера и обязывает реализовать два основных метода: parse() и get_stat().
+
+В метод parse() должен передаваться путь к файлу(ам) которые необходимо проанализировать.
+
+Метод get_stat() должен возвращать структуру StanData с результатом обработки файла статистики утилиты.
