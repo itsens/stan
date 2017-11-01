@@ -89,7 +89,13 @@ class StanData(defaultdict):
         t = super().__reduce__()
         return (t[0], ()) + t[2:]
 
-    def relate(self, by_metric: str, flat=True):  # Can be slow. Need for test with big data.
+    def relate(self, by_metric: str, flat=True):  # TODO: Can be slow. Need for test with big data.
+        """
+        Builds the dependency of the remaining metrics on the selected
+        :param by_metric: a metric on which the dependence will be built
+        :param flat: return format
+        :return:
+        """
         if by_metric not in self.metrics:
             raise KeyError('No such metric in data')
 
