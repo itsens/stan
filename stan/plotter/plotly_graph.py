@@ -38,6 +38,11 @@ class PlotlyGraph:
         return numpy.convolve(interval, window, 'same')
 
     def append_data(self, name: str, x: list, y: list, y2: bool=False, sma: bool=False, sma_interval: int=5):
+        if len(x) is 0 or len(y) is 0:
+            raise ValueError('"x" or "y" must not be empty')
+        if len(x) != len(y):
+            raise ValueError('"x" and "y" must be the same length')
+
         line_color = next(self.colors_chain)
         if y2:
             self.max_y2 = max([self.max_y2, max(n for n in y if n is not None)])
