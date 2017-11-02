@@ -2,18 +2,19 @@ from itertools import chain
 import plotly
 from plotly.graph_objs import Scatter, Layout, Line
 import numpy
-
-COLORS = ['rgb(47, 117, 181)',
-          'rgb(84, 130, 53)',
-          'rgb(198, 89, 17)',
-          'rgb(51, 63, 79)',
-          'rgb(110, 65, 143)',
-          'rgb(165, 27, 27)']
+from random import randint
 
 
 class PlotlyGraph:
-    def __init__(self, graph_title):
-        self.colors_chain = chain(COLORS)
+    def __init__(self, graph_title, random_colors: bool=False):
+        self.random_colors = random_colors
+        self.default_colors = chain(['rgb(47, 117, 181)',
+                                     'rgb(84, 130, 53)',
+                                     'rgb(198, 89, 17)',
+                                     'rgb(51, 63, 79)',
+                                     'rgb(110, 65, 143)',
+                                     'rgb(165, 27, 27)'])
+
         self.data = []
         self.layout = Layout(title=graph_title, separators=', ')
         # self.layout.update(titlefont=dict(size=36))
@@ -37,13 +38,22 @@ class PlotlyGraph:
         window = numpy.ones(int(window_size)) / float(window_size)
         return numpy.convolve(interval, window, 'same')
 
+    @staticmethod
+    def _random_color():
+        return 'rgb({r}, {g}, {b})'.format(r=randint(0, 255),
+                                           g=randint(0, 255),
+                                           b=randint(0, 255))
+
     def append_data(self, name: str, x: list, y: list, y2: bool=False, sma: bool=False, sma_interval: int=5):
         if len(x) is 0 or len(y) is 0:
             raise ValueError('"x" or "y" must not be empty')
         if len(x) != len(y):
             raise ValueError('"x" and "y" must be the same length')
 
-        line_color = next(self.colors_chain)
+        if self.random_colors:
+            line_color = self._random_color()
+        else:
+            line_color = next(self.default_colors)
         if y2:
             self.max_y2 = max([self.max_y2, max(n for n in y if n is not None)])
             self.layout.update(yaxis2=dict(title='y2_axis', showline=True, anchor='x', overlaying='y',
