@@ -115,3 +115,66 @@ class JmeterXmlParser(Parser):
         elif data_format == 'joined':
             # TODO: реализовать
             return self.data
+
+class JmeterCsvParser(Parser):
+    def __init__(self, DIR_PATH, member=''):
+        file = gzip.GzipFile(DIR_PATH, 'rb')
+        if file.myfileobj.read(2) == '\037\213':
+            file.myfileobj.seek(0)
+            buffer = ""
+            while 1:
+                data = file.read()
+                if data == "":
+                    break
+                buffer += data
+            object = cPickle.loads(buffer)
+
+            self.__dict__ = object.__dict__
+        else:
+            self.df = self.jmeter2pandas(DIR_PATH, member)
+        file.close()
+
+    def save(self, filepath="", bin=1):
+        """Saves a compressed object to disk
+        """
+        if exists(filepath):
+            print("Error: File " + filepath + "already exists")
+        else:
+            file = gzip.GzipFile(filepath, 'wb')
+            file.write(cPickle.dumps(self, bin))
+            file.close()
+
+    def jmeter2pandas(self, DIR_PATH, member=''):
+
+        read_csv_param = dict(index_col=['timeStamp'],
+                              low_memory=False,
+                              na_values=[' ', '', 'null'],
+                              converters={'timeStamp': lambda a: float(a) / 1000}) # ,tp
+
+        if member and zipfile.is_zipfile(DIR_PATH):
+            zipy = zipfile.ZipFile(DIR_PATH)
+            f = zipy.open(member, 'r')
+            dfs = pd.read_csv(f, **read_csv_param)
+            f.close()
+            return dfs
+
+        if isdir(DIR_PATH):
+            files = filter(lambda a: '.csv' in a, listdir(DIR_PATH))
+
+            dfs = pd.read_csv(DIR_PATH + files[0], **read_csv_param)
+            for csvfile in files[1:]:
+                dfs = dfs.append(
+                    pd.read_csv(DIR_PATH + csvfile, **read_csv_param))
+        else:
+            dfs = pd.read_csv(DIR_PATH, **read_csv_param)
+
+        return dfs
+
+    def tmstmp_round(self, t):
+        u""" Добавить столбец округлений timeStamp_round с агрегацией t сек"""
+        self.df['timeStamp_round'] = [round(a / t) * t for a in self.df.index]
+        self.agg = t
+
+    def __getitem__(self, g):
+        hjk = self.df[self.df.label == g]
+        return hjk['elapsed'].groupby(hjk.index.map(lambda a: round(a / 1) * 1)).mean()
