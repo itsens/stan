@@ -1,8 +1,10 @@
 __autor__ = 'borodenkov.e.a@gmail.com'
 
+from stan.core import StanDict, StanData
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
-
+import pandas as pd
+from pprint import pprint
 
 class JmeterXmlParser(Parser):
     """
@@ -116,65 +118,42 @@ class JmeterXmlParser(Parser):
             # TODO: реализовать
             return self.data
 
+
 class JmeterCsvParser(Parser):
-    def __init__(self, DIR_PATH, member=''):
-        file = gzip.GzipFile(DIR_PATH, 'rb')
-        if file.myfileobj.read(2) == '\037\213':
-            file.myfileobj.seek(0)
-            buffer = ""
-            while 1:
-                data = file.read()
-                if data == "":
-                    break
-                buffer += data
-            object = cPickle.loads(buffer)
+    def __init__(self):
+        self.file_path = None
+        self.pandas_data_frame = None
+        self.sec = 1000
+        self.sampling_time = 1
 
-            self.__dict__ = object.__dict__
-        else:
-            self.df = self.jmeter2pandas(DIR_PATH, member)
-        file.close()
+        self.data = StanData()
 
-    def save(self, filepath="", bin=1):
-        """Saves a compressed object to disk
-        """
-        if exists(filepath):
-            print("Error: File " + filepath + "already exists")
-        else:
-            file = gzip.GzipFile(filepath, 'wb')
-            file.write(cPickle.dumps(self, bin))
-            file.close()
-
-    def jmeter2pandas(self, DIR_PATH, member=''):
-
+    def __read_csv_to_df(self):
         read_csv_param = dict(index_col=['timeStamp'],
                               low_memory=False,
                               na_values=[' ', '', 'null'],
-                              converters={'timeStamp': lambda a: float(a) / 1000}) # ,tp
+                              converters={'timeStamp': lambda a: float(a) / self.sec})
 
-        if member and zipfile.is_zipfile(DIR_PATH):
-            zipy = zipfile.ZipFile(DIR_PATH)
-            f = zipy.open(member, 'r')
-            dfs = pd.read_csv(f, **read_csv_param)
-            f.close()
-            return dfs
+        self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
 
-        if isdir(DIR_PATH):
-            files = filter(lambda a: '.csv' in a, listdir(DIR_PATH))
+    def __success_samples_per_time(self):
+        samples_per_time = self.pandas_data_frame['SampleCount'].groupby(self.pandas_data_frame.index.map(lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
+        for ts in samples_per_time.keys():
+            self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
 
-            dfs = pd.read_csv(DIR_PATH + files[0], **read_csv_param)
-            for csvfile in files[1:]:
-                dfs = dfs.append(
-                    pd.read_csv(DIR_PATH + csvfile, **read_csv_param))
-        else:
-            dfs = pd.read_csv(DIR_PATH, **read_csv_param)
+    def __error_samples_per_time(self):
+        samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(self.pandas_data_frame.index.map(lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
+        for ts in samples_per_time.keys():
+            self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
 
-        return dfs
+    def __analyze(self):
+        self.__success_samples_per_time()
+        self.__error_samples_per_time()
 
-    def tmstmp_round(self, t):
-        u""" Добавить столбец округлений timeStamp_round с агрегацией t сек"""
-        self.df['timeStamp_round'] = [round(a / t) * t for a in self.df.index]
-        self.agg = t
+    def get_stat(self) -> StanData:
+        return self.data
 
-    def __getitem__(self, g):
-        hjk = self.df[self.df.label == g]
-        return hjk['elapsed'].groupby(hjk.index.map(lambda a: round(a / 1) * 1)).mean()
+    def parse(self, file_path: str):
+        self.file_path = file_path
+        self.__read_csv_to_df()
+        self.__analyze()

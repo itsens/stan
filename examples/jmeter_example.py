@@ -1,7 +1,8 @@
 __author__ = 'borodenkov.e.a@gmail.com'
 
 from pprint import pprint
-from stan.parser import JmeterXmlParser
+from stan.parser import JmeterCsvParser
+from stan.plotter import PlotlyGraph
 import os
 
 
@@ -21,27 +22,9 @@ class JmeterGraph():
         self.X_LABEL_TYPE = 'time0'
 
     def sample_count_long(self, qq, GRAPH_DIR):
-        '''
-        Динамика подачи нагрузки
-        :param qq:
-        :param GRAPH_DIR:
-        :return:
-        '''
+        pass
 
-        ss = qq['SampleCount'].groupby(qq.index.map(lambda a: round(a / 60) * 60)).sum()
-        ee = qq['ErrorCount'].groupby(qq.index.map(lambda a: round(a / 1) * 1)).sum()
-
-        gr1 = MYPLOT(title=u'Динамика подачи нагрузки',
-                     y_label_name=u'Количество запросов, с',
-                     title_loc=self.TITLE_LOC,
-                     tick_step=3600,
-                     x_label_type=self.X_LABEL_TYPE,
-                     ytick_qty=self.YTICK_QTY)
-        gr1.plot(ss / 60, color='g', label=u'Успешные запросы')
-        gr1.plot(ee, color='r', label=u'Не успешные запросы')
-        gr1.add_legend()
-        gr1.save(GRAPH_DIR + '/sample_count_long.png')
-
+"""
     def label_quantile_long(self, qq, GRAPH_DIR):
         qq['timeStamp_round'] = [round(a / 1) * 1 for a in qq.index]
         df1 = qq.pivot_table(columns=['label'],  # Колонка из которой будут браться названия для колонок сводной таблицы
@@ -59,16 +42,28 @@ class JmeterGraph():
         gr1.plot(per95 / 60, label=u'95 перцентиль')
         gr1.add_legend()
         gr1.save(GRAPH_DIR + '/label_quantile_long.png')
-
-
+"""
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_XML = FILE_DIR + '/files/jm_results.xml'
+TEST_CSV = FILE_DIR + '/files/jm_results.csv'
+GRAPH_FILE = FILE_DIR + '/files/samples.html'
 # TEST_XML = FILE_DIR + '/files/jmeter.b2b.xml'
 
 if __name__ == '__main__':
-    jm = jmeter.JMETER(JM_RES).df
-    ff = JmeterGraph()
-    ff.sample_count_long()
-    ff.label_quantile_long
+    jm_parser = JmeterCsvParser()
+    jm_parser.parse(TEST_CSV)
+    jm_stat = jm_parser.get_stat()
+    flat_stat = jm_stat.flat()
+    pprint(jm_stat)
 
+    graph = PlotlyGraph('Интенсивность запросов')
+    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'])
+    graph.append_data(name='ErrorSamples', x=flat_stat['index'], y=flat_stat['ErrorCount'])
+    graph.sign_axes(x_sign='time, s', y_sign='Samples per second')
+    graph.plot(GRAPH_FILE)
+
+
+    # ff = JmeterGraph()
+    # ff.sample_count_long()
+    # ff.label_quantile_long

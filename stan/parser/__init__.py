@@ -1,4 +1,4 @@
 from .parser import Parser
 from .sar import SarXmlParser
-from .jmeter import JmeterXmlParser
+from .jmeter import JmeterCsvParser
 from .tlsm import TlsmCsvParser

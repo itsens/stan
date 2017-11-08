@@ -89,6 +89,10 @@ class StanData(defaultdict):
         t = super().__reduce__()
         return (t[0], ()) + t[2:]
 
+    def rename(self, old_name, new_name):
+        # TODO: implement
+        pass
+
     def relate(self, by_metric: str, flat=True):  # TODO: Can be slow. Need for test with big data.
         """
         Builds the dependency of the remaining metrics on the selected
@@ -140,7 +144,7 @@ class StanData(defaultdict):
             raise TypeError('The value must be StanDict')
         for metric in stan_dict:
             self.metrics.add(metric)
-        self[timestamp] = stan_dict
+        self[timestamp] = self[timestamp] + stan_dict
 
     def flat(self):
         """
