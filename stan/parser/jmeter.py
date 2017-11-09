@@ -123,6 +123,7 @@ class JmeterCsvParser(Parser):
         self.file_path = None
         self.pandas_data_frame = None
         self.sec = 1000
+        self.sampling_time = 1
 
         self.data = StanData()
 
@@ -175,8 +176,7 @@ class JmeterCsvParser(Parser):
     def get_stat(self) -> StanData:
         return self.data
 
-    def parse(self, file_path: str, sampling_time: int):
+    def parse(self, file_path: str):
         self.file_path = file_path
-        self.sampling_time = sampling_time
         self.__read_csv_to_df()
         self.__analyze()

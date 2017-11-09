@@ -16,7 +16,9 @@ def sample_count(GRAPH_FILE, flat_stat):
     graph = PlotlyGraph('Интенсивность запросов')
     graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'])
     graph.append_data(name='ErrorSamples', x=flat_stat['index'], y=flat_stat['ErrorCount'])
-    graph.sign_axes(x_sign='time, s', y_sign='Samples per second')
+
+    graph.config_axes(x_sign='time, s',
+                      y_sign='Samples per second')
     graph.plot(GRAPH_FILE)
 
 
@@ -26,14 +28,19 @@ def label_quantile(GRAPH_FILE, flat_stat):
                       sma=True, sma_interval=60)
     graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'],
                       y2=True, sma=True, sma_interval=60)
-    graph.sign_axes(x_sign='time, s', y_sign='mc', y2_sign='запрос/c')
+    graph.config_axes(y_max=1000,
+                      x_sign='time, s',
+                      y_sign='mc',
+                      y2_sign='запрос/c')
     graph.plot(GRAPH_FILE)
 
 def quantile_threads(GRAPH_FILE, flat_stat):
     graph = PlotlyGraph('95 перцентиль длительности отлика')
     graph.append_data(name='Quantile 95', x=flat_stat['index'], y=flat_stat['quantile_95'])
     graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['allThreads'], y2=True)
-    graph.sign_axes(x_sign='time, s', y_sign='mc', y2_sign='Динамика подачи нагрузки/c')
+    graph.config_axes(x_sign='time, s',
+                      y_sign='mc',
+                      y2_sign='Динамика подачи нагрузки/c')
     graph.plot(GRAPH_FILE)
 
 
