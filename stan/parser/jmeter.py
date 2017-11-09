@@ -4,7 +4,6 @@ from stan.core import StanDict, StanData
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
 import pandas as pd
-from pprint import pprint
 
 class JmeterXmlParser(Parser):
     """
@@ -124,36 +123,60 @@ class JmeterCsvParser(Parser):
         self.file_path = None
         self.pandas_data_frame = None
         self.sec = 1000
-        self.sampling_time = 1
 
         self.data = StanData()
 
     def __read_csv_to_df(self):
         read_csv_param = dict(index_col=['timeStamp'],
-                              low_memory=False,
+                              low_memory=True,
                               na_values=[' ', '', 'null'],
                               converters={'timeStamp': lambda a: float(a) / self.sec})
 
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
 
     def __success_samples_per_time(self):
-        samples_per_time = self.pandas_data_frame['SampleCount'].groupby(self.pandas_data_frame.index.map(lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
+        samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
+
         for ts in samples_per_time.keys():
             self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
 
     def __error_samples_per_time(self):
-        samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(self.pandas_data_frame.index.map(lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
+        samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
+
         for ts in samples_per_time.keys():
             self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
+
+    def __quantile_95_per_time(self):
+        quant = self.pandas_data_frame['elapsed'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
+
+        for ts in quant.keys():
+            self.data.append(ts, StanDict(quantile_95=quant.get(ts)))
+
+    def __thread_per_time(self):
+        quant = self.pandas_data_frame['allThreads'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).mean()
+
+        for ts in quant.keys():
+            self.data.append(ts, StanDict(allThreads=quant.get(ts)))
 
     def __analyze(self):
         self.__success_samples_per_time()
         self.__error_samples_per_time()
+        self.__quantile_95_per_time()
+        self.__thread_per_time()
 
     def get_stat(self) -> StanData:
         return self.data
 
-    def parse(self, file_path: str):
+    def parse(self, file_path: str, sampling_time: int):
         self.file_path = file_path
+        self.sampling_time = sampling_time
         self.__read_csv_to_df()
         self.__analyze()
