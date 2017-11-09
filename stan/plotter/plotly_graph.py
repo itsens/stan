@@ -90,6 +90,16 @@ class PlotlyGraph:
                 ma_scatter_params['yaxis'] = 'y2'
             self.data.append(Scatter(**ma_scatter_params))
 
+    def config_axes(self, x_sign: str=False, y_sign: str=False, y2_sign: str=False,
+                    x_max=False, y_max=False, y2_max=False):
+        self.sign_axes(x_sign=x_sign, y_sign=y_sign, y2_sign=y2_sign)
+        if x_max:
+            self.layout.update(xaxis=dict(range=[0, x_max]))
+        if y_max:
+            self.layout.update(yaxis=dict(range=[0, y_max]))
+        if y2_max:
+            self.layout.update(yaxis2=dict(range=[0, y2_max]))
+
     def sign_axes(self, x_sign: str=False, y_sign: str=False, y2_sign: str=False):
         if x_sign:
             self.layout.update(xaxis=dict(title=x_sign))
