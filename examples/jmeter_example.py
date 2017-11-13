@@ -7,14 +7,14 @@ import os
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_XML = FILE_DIR + '/files/jm_results.xml'
-TEST_CSV = FILE_DIR + '/files/jm_results.csv'
+TEST_CSV = FILE_DIR + '/files/jm_results_sg1000.csv'
 GRAPH_FILE = FILE_DIR + '/files/{}.html'
 # TEST_XML = FILE_DIR + '/files/jmeter.b2b.xml'
 
 
 def sample_count(GRAPH_FILE, flat_stat):
     graph = PlotlyGraph('Интенсивность запросов')
-    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'])
+    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'], sma=True, sma_interval=60)
     graph.append_data(name='ErrorSamples', x=flat_stat['index'], y=flat_stat['ErrorCount'])
 
     graph.config_axes(x_sign='time, s',
@@ -28,11 +28,12 @@ def label_quantile(GRAPH_FILE, flat_stat):
                       sma=True, sma_interval=60)
     graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'],
                       y2=True, sma=True, sma_interval=60)
-    graph.config_axes(y_max=1000,
+    graph.config_axes(y_max=5000,
                       x_sign='time, s',
                       y_sign='mc',
                       y2_sign='запрос/c')
     graph.plot(GRAPH_FILE)
+
 
 def quantile_threads(GRAPH_FILE, flat_stat):
     graph = PlotlyGraph('95 перцентиль длительности отлика')
@@ -44,9 +45,8 @@ def quantile_threads(GRAPH_FILE, flat_stat):
     graph.plot(GRAPH_FILE)
 
 
-
-
 if __name__ == '__main__':
+    print(TEST_CSV)
     jm_parser = JmeterCsvParser()
     jm_parser.parse(TEST_CSV)
     jm_stat = jm_parser.get_stat()
@@ -57,9 +57,6 @@ if __name__ == '__main__':
     quantile_threads(GRAPH_FILE.format('allThreads'), flat_stat=flat_stat)
 
     print(jm_stat.metrics)
-    for key in list(jm_stat.keys())[0:1]:
-        pprint(jm_stat[key])
-    pprint(jm_stat)
 
     graph = PlotlyGraph('95 перцентиль длительности отлика')
     graph.append_data(name='Quantile 95', x=flat_stat['index'], y=flat_stat['quantile_95'])#, y=flat_stat['quantile_95'])
