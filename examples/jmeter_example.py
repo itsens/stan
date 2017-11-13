@@ -12,36 +12,26 @@ GRAPH_FILE = FILE_DIR + '/files/{}.html'
 # TEST_XML = FILE_DIR + '/files/jmeter.b2b.xml'
 
 
-def sample_count(GRAPH_FILE, flat_stat):
+def samples_per_time(GRAPH_FILE, flat_stat):
     graph = PlotlyGraph('Интенсивность запросов')
-    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'], sma=True, sma_interval=60)
-    graph.append_data(name='ErrorSamples', x=flat_stat['index'], y=flat_stat['ErrorCount'])
+    graph.append_data(name='Успешные', x=flat_stat['index'], y=flat_stat['SampleCount'], sma=True, sma_interval=60)
+    graph.append_data(name='Неуспешные', x=flat_stat['index'], y=flat_stat['ErrorCount'])
 
-    graph.config_axes(x_sign='time, s',
-                      y_sign='Samples per second')
+    graph.config_axes(x_sign='Длительность теста, s',
+                      y_sign='запрос/с')
     graph.plot(GRAPH_FILE)
 
 
-def label_quantile(GRAPH_FILE, flat_stat):
-    graph = PlotlyGraph('95 перцентиль длительности отлика')
-    graph.append_data(name='Quantile 95', x=flat_stat['index'], y=flat_stat['quantile_95'],
+def mean_per_time_all(GRAPH_FILE, flat_stat):
+    graph = PlotlyGraph('Арифмитеское среднее по всем запросам')
+    graph.append_data(name='Длительность отклика', x=flat_stat['index'], y=flat_stat['elapsed_mean_all'],
                       sma=True, sma_interval=60)
-    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'],
+    graph.append_data(name='Запросы в секунду', x=flat_stat['index'], y=flat_stat['SampleCount'],
                       y2=True, sma=True, sma_interval=60)
     graph.config_axes(y_max=5000,
                       x_sign='time, s',
                       y_sign='mc',
                       y2_sign='запрос/c')
-    graph.plot(GRAPH_FILE)
-
-
-def quantile_threads(GRAPH_FILE, flat_stat):
-    graph = PlotlyGraph('95 перцентиль длительности отлика')
-    graph.append_data(name='Quantile 95', x=flat_stat['index'], y=flat_stat['quantile_95'])
-    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['allThreads'], y2=True)
-    graph.config_axes(x_sign='time, s',
-                      y_sign='mc',
-                      y2_sign='Динамика подачи нагрузки/c')
     graph.plot(GRAPH_FILE)
 
 
@@ -52,20 +42,5 @@ if __name__ == '__main__':
     jm_stat = jm_parser.get_stat()
     flat_stat = jm_stat.flat()
 
-    sample_count(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
-    label_quantile(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)
-    quantile_threads(GRAPH_FILE.format('allThreads'), flat_stat=flat_stat)
-
-    print(jm_stat.metrics)
-
-    graph = PlotlyGraph('95 перцентиль длительности отлика')
-    graph.append_data(name='Quantile 95', x=flat_stat['index'], y=flat_stat['quantile_95'])#, y=flat_stat['quantile_95'])
-    graph.append_data(name='SuccessSamples', x=flat_stat['index'], y=flat_stat['SampleCount'], y2=True)
-
-    graph.sign_axes(x_sign='time, s', y_sign='Samples per second', y2_sign='Интенсивность запросов, с')
-    # graph.plot(GRAPH_FILE.format('quantile_95'))
-
-
-    # ff = JmeterGraph()
-    # ff.sample_count_long()
-    # ff.label_quantile_long
+    samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
+    mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)

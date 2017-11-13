@@ -171,7 +171,7 @@ class JmeterCsvParser(Parser):
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
 
         for ts in _elapsed.keys():
-            self.data.append(ts, StanDict(elapsed_all=_elapsed.get(ts)))
+            self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
 
     def __quantile_all(self):
         '''
