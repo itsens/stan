@@ -7,12 +7,16 @@ class StanDict(dict):
     Is an extended dict() with custom method keys() for flexible key filtering
     and with the ability to stack two entities.
     """
+    def __init__(self, index_method=None, **kwargs):
+        super().__init__(**kwargs)
+        self.index_method = index_method
 
     def __add__(self, other):
         if type(other) != type(self):
             raise TypeError('Different types')
 
         result = StanDict()
+        result.index_method = self.index_method
 
         for key in self:
             result[key] = self[key]
@@ -25,8 +29,15 @@ class StanDict(dict):
 
         return result
 
+    def __setitem__(self, key, value):
+        super().__setitem__(key, value)
+        self.index_method(self)
+
     def __missing__(self, key):
             return None
+
+    def set_index_method(self, method):
+        self.index_method = method
 
     def keys(self, starts=None, contains=None):
         """
@@ -62,13 +73,17 @@ class StanData(defaultdict):
     def __repr__(self):
         return dict.__repr__(self)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value: StanDict):
         if type(key) is not int or key > 253402289999:
             raise KeyError('The key is not Unix time')
         if type(value) != StanDict:
             raise TypeError('The value must be StanDict')
-        for metric in value:
-            self.metrics.add(metric)
+
+        if value.index_method is None:
+            for metric in value:
+                self.metrics.add(metric)
+        value.set_index_method(self._index)  # TODO: Double indexing if adding as StanDict
+
         super().__setitem__(key, value)
 
     def __add__(self, other):
@@ -88,6 +103,13 @@ class StanData(defaultdict):
     def __reduce__(self):
         t = super().__reduce__()
         return (t[0], ()) + t[2:]
+
+    def _index(self, stan_dict: StanDict):
+        if type(stan_dict) != StanDict:
+            raise TypeError('Can indexing only StanDict')
+
+        for metric in stan_dict:
+            self.metrics.add(metric)
 
     def relate(self, by_metric: str, flat=True):  # TODO: Can be slow. Need for test with big data.
         """
@@ -140,7 +162,7 @@ class StanData(defaultdict):
             raise TypeError('The value must be StanDict')
         for metric in stan_dict:
             self.metrics.add(metric)
-        self[timestamp] = stan_dict
+        self[timestamp] += stan_dict
 
     def flat(self):
         """
