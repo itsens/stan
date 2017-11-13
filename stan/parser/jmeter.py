@@ -5,6 +5,7 @@ from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
 import pandas as pd
 
+
 class JmeterXmlParser(Parser):
     """
     XML parser for stat files from jmeter util.
@@ -16,6 +17,7 @@ class JmeterXmlParser(Parser):
     </httpSample>
 
     """
+
     def __init__(self):
         self.file_path = None
         self.stat_length = None
@@ -138,7 +140,7 @@ class JmeterCsvParser(Parser):
     def __success_samples_per_time(self):
         '''
 
-        :return: успешные запросы за sampling_timeя
+        :return: успешные запросы за sampling time
         '''
         samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
             self.pandas_data_frame.index.map(
@@ -150,7 +152,7 @@ class JmeterCsvParser(Parser):
     def __error_samples_per_time(self):
         '''
 
-        :return: возвращает не успешные запросы за sampling_time
+        :return: возвращает не успешные запросы за sampling time
         '''
         samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
             self.pandas_data_frame.index.map(
@@ -162,7 +164,7 @@ class JmeterCsvParser(Parser):
     def __mean_per_time(self):
         '''
 
-        :return:
+        :return: арифметическое среднее значение за sampling time
         '''
         _elapsed = self.pandas_data_frame['elapsed'].groupby(
             self.pandas_data_frame.index.map(
@@ -171,13 +173,18 @@ class JmeterCsvParser(Parser):
         for ts in _elapsed.keys():
             self.data.append(ts, StanDict(elapsed_all=_elapsed.get(ts)))
 
-    def __quantile(self):
+    def __quantile_all(self):
         '''
 
         :return: 90/95/99 перцентилей за тест.
         '''
         pass
 
+    def __sample_all(self):
+        '''
+
+        :return: успешные/неуспешные запросы за тест
+        '''
 
     def __thread_per_time(self):
         quant = self.pandas_data_frame['allThreads'].groupby(
