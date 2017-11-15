@@ -31,7 +31,8 @@ class StanDict(dict):
 
     def __setitem__(self, key, value):
         super().__setitem__(key, value)
-        self.index_method(self)
+        if self.index_method:
+            self.index_method(self)
 
     def __missing__(self, key):
             return None
