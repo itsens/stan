@@ -105,12 +105,17 @@ class StanData(defaultdict):
         t = super().__reduce__()
         return (t[0], ()) + t[2:]
 
+
     def _index(self, stan_dict: StanDict):
         if type(stan_dict) != StanDict:
             raise TypeError('Can indexing only StanDict')
 
         for metric in stan_dict:
             self.metrics.add(metric)
+
+    def rename(self, old_name, new_name):
+        # TODO: implement
+        pass
 
     def relate(self, by_metric: str, flat=True):  # TODO: Can be slow. Need for test with big data.
         """

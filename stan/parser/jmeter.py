@@ -1,7 +1,9 @@
 __autor__ = 'borodenkov.e.a@gmail.com'
 
+from stan.core import StanDict, StanData
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
+import pandas as pd
 
 
 class JmeterXmlParser(Parser):
@@ -15,6 +17,7 @@ class JmeterXmlParser(Parser):
     </httpSample>
 
     """
+
     def __init__(self):
         self.file_path = None
         self.stat_length = None
@@ -115,3 +118,92 @@ class JmeterXmlParser(Parser):
         elif data_format == 'joined':
             # TODO: реализовать
             return self.data
+
+
+class JmeterCsvParser(Parser):
+    def __init__(self):
+        self.file_path = None
+        self.pandas_data_frame = None
+        self.sec = 1000
+        self.sampling_time = 1
+
+        self.data = StanData()
+
+    def __read_csv_to_df(self):
+        read_csv_param = dict(index_col=['timeStamp'],
+                              low_memory=True,
+                              na_values=[' ', '', 'null'],
+                              converters={'timeStamp': lambda a: float(a) / self.sec})
+
+        self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+
+    def __success_samples_per_time(self):
+        '''
+
+        :return: успешные запросы за sampling time
+        '''
+        samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
+
+        for ts in samples_per_time.keys():
+            self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
+
+    def __error_samples_per_time(self):
+        '''
+
+        :return: возвращает не успешные запросы за sampling time
+        '''
+        samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
+
+        for ts in samples_per_time.keys():
+            self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
+
+    def __mean_per_time(self):
+        '''
+
+        :return: арифметическое среднее значение за sampling time
+        '''
+        _elapsed = self.pandas_data_frame['elapsed'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
+
+        for ts in _elapsed.keys():
+            self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
+
+    def __quantile_all(self):
+        '''
+
+        :return: 90/95/99 перцентилей за тест.
+        '''
+        pass
+
+    def __sample_all(self):
+        '''
+
+        :return: успешные/неуспешные запросы за тест
+        '''
+
+    def __thread_per_time(self):
+        quant = self.pandas_data_frame['allThreads'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).mean()
+
+        for ts in quant.keys():
+            self.data.append(ts, StanDict(allThreads=quant.get(ts)))
+
+    def __analyze(self):
+        self.__success_samples_per_time()
+        self.__error_samples_per_time()
+        self.__mean_per_time()
+        self.__thread_per_time()
+
+    def get_stat(self) -> StanData:
+        return self.data
+
+    def parse(self, file_path: str):
+        self.file_path = file_path
+        self.__read_csv_to_df()
+        self.__analyze()
