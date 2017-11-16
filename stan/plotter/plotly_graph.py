@@ -6,7 +6,7 @@ from random import randint
 
 
 class PlotlyGraph:
-    def __init__(self, graph_title, random_colors: bool=False):
+    def __init__(self, graph_title, random_colors: bool = False):
         self.random_colors = random_colors
         self.default_colors = chain(['rgb(47, 117, 181)',
                                      'rgb(84, 130, 53)',
@@ -44,7 +44,7 @@ class PlotlyGraph:
                                            g=randint(0, 255),
                                            b=randint(0, 255))
 
-    def append_data(self, name: str, x: list, y: list, y2: bool=False, sma: bool=False, sma_interval: int=5):
+    def append_data(self, name: str, x: list, y: list, y2: bool = False, sma: bool = False, sma_interval: int = 5):
         if len(x) is 0 or len(y) is 0:
             raise ValueError('"x" or "y" must not be empty')
         if len(x) != len(y):
@@ -82,15 +82,15 @@ class PlotlyGraph:
 
             ma = self._moving_average(sma_y, sma_interval)
             ma_scatter_params = dict()
-            ma_scatter_params['x'] = sma_x[sma_interval:1-sma_interval]
-            ma_scatter_params['y'] = ma[sma_interval:1-sma_interval]
+            ma_scatter_params['x'] = sma_x[sma_interval:1 - sma_interval]
+            ma_scatter_params['y'] = ma[sma_interval:1 - sma_interval]
             ma_scatter_params['line'] = Line(width=2, color=line_color)
             ma_scatter_params['name'] = name + ' (sma)'
             if y2:
                 ma_scatter_params['yaxis'] = 'y2'
             self.data.append(Scatter(**ma_scatter_params))
 
-    def config_axes(self, x_sign: str=False, y_sign: str=False, y2_sign: str=False,
+    def config_axes(self, x_sign: str = False, y_sign: str = False, y2_sign: str = False,
                     x_max=False, y_max=False, y2_max=False):
         self.sign_axes(x_sign=x_sign, y_sign=y_sign, y2_sign=y2_sign)
         if x_max:
@@ -100,7 +100,7 @@ class PlotlyGraph:
         if y2_max:
             self.layout.update(yaxis2=dict(range=[0, y2_max]))
 
-    def sign_axes(self, x_sign: str=False, y_sign: str=False, y2_sign: str=False):
+    def sign_axes(self, x_sign: str = False, y_sign: str = False, y2_sign: str = False):
         if x_sign:
             self.layout.update(xaxis=dict(title=x_sign))
         if y_sign:
@@ -118,3 +118,55 @@ class PlotlyGraph:
                             # image='png', image_filename='io',
                             image_width=700, image_height=450,
                             show_link=False)
+
+
+class SarGraph:
+    def __init__(self, hostname):
+        self.stan_data = None
+        self.graph_dir = None
+        self.hostname = hostname
+
+    def __cpu(self):
+        plot_file_name = self.graph_dir + 'cpu_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация CPU, ' + self.hostname)
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Утилизация CPU ', x=x, y=self.stan_data['cpu_all_util'])
+        gr.append_data('Процент времени в ожидании завершения ввода\вывода', x=x, y=self.stan_data['cpu_all_iowait'])
+        gr.sign_axes(x_sign='asdf', y_sign='Утилизация CPU, %.')
+        gr.plot(plot_file_name)
+
+    def __cpu_single_util(self):
+        pass
+
+    def __mem(self):
+        pass
+
+    def __io(self):
+        pass
+
+    def __io_bytes(self):
+        pass
+
+    def __queue(self):
+        pass
+
+    def __net(self):
+        pass
+
+    def sar_graph(self, sets: set = {'cpu', 'mem', 'io', 'queue'},
+                  graph_dir='вычислять текущую директорию',  # todo
+                  stan_data=''):
+
+        if not sets.issubset({'cpu', 'mem', 'io', 'queue'}):
+            raise ValueError
+
+        self.graph_dir = graph_dir
+        self.stan_data = stan_data
+
+        graphs = {'cpu': self.__cpu,
+                  'mem': self.__mem,
+                  'io': self.__queue,
+                  'queue': self.__queue}
+
+        for graph in sets:
+            graphs[graph]()
