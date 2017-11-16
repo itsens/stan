@@ -7,6 +7,7 @@ class StanDict(dict):
     Is an extended dict() with custom method keys() for flexible key filtering
     and with the ability to stack two entities.
     """
+
     def __init__(self, index_method=None, **kwargs):
         super().__init__(**kwargs)
         self.index_method = index_method
@@ -35,7 +36,7 @@ class StanDict(dict):
             self.index_method(self)
 
     def __missing__(self, key):
-            return None
+        return None
 
     def set_index_method(self, method):
         self.index_method = method
@@ -67,6 +68,7 @@ class StanData(defaultdict):
              timestamp3: StanDict,
              ...)
     """
+
     def __init__(self):
         super().__init__(StanDict)
         self.metrics = set()
@@ -104,7 +106,6 @@ class StanData(defaultdict):
     def __reduce__(self):
         t = super().__reduce__()
         return (t[0], ()) + t[2:]
-
 
     def _index(self, stan_dict: StanDict):
         if type(stan_dict) != StanDict:
@@ -194,6 +195,7 @@ class StanFlatData(defaultdict):
                  metric2=[],
                  ...)
     """
+
     def __init__(self):
         super().__init__(list)
 
@@ -206,6 +208,7 @@ class StanFlatData(defaultdict):
 
     def relate(self, by: str):
         # TODO: Implement?
+
         pass
 
     def keys(self, starts=None, contains=None):
