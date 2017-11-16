@@ -2,11 +2,8 @@
 .idea
 .idea/*
 *.html
-examples/files/jm_results.csv
-examples/files/jm_results_sg1000.csv
-examples/files/jm_results_sg2000.csv
-examples/files/label_mean_long.png
-examples/files/label_quantile_long.png
-examples/files/label_quantile_long2.png
-examples/files/sar_DTDv2.19.xml
-examples/files/sar_DTDv2.19.xml
+examples/files/sar/
+stan/__pycache__/
+stan/core/__pycache__/
+stan/parser/__pycache__/
+stan/plotter/__pycache__/

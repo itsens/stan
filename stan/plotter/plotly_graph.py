@@ -3,10 +3,11 @@ import plotly
 from plotly.graph_objs import Scatter, Layout, Line
 import numpy
 from random import randint
+import os
 
 
 class PlotlyGraph:
-    def __init__(self, graph_title, random_colors: bool=False):
+    def __init__(self, graph_title, random_colors: bool = False):
         self.random_colors = random_colors
         self.default_colors = chain(['rgb(47, 117, 181)',
                                      'rgb(84, 130, 53)',
@@ -44,7 +45,7 @@ class PlotlyGraph:
                                            g=randint(0, 255),
                                            b=randint(0, 255))
 
-    def append_data(self, name: str, x: list, y: list, y2: bool=False, sma: bool=False, sma_interval: int=5):
+    def append_data(self, name: str, x: list, y: list, y2: bool = False, sma: bool = False, sma_interval: int = 5):
         if len(x) is 0 or len(y) is 0:
             raise ValueError('"x" or "y" must not be empty')
         if len(x) != len(y):
@@ -82,15 +83,15 @@ class PlotlyGraph:
 
             ma = self._moving_average(sma_y, sma_interval)
             ma_scatter_params = dict()
-            ma_scatter_params['x'] = sma_x[sma_interval:1-sma_interval]
-            ma_scatter_params['y'] = ma[sma_interval:1-sma_interval]
+            ma_scatter_params['x'] = sma_x[sma_interval:1 - sma_interval]
+            ma_scatter_params['y'] = ma[sma_interval:1 - sma_interval]
             ma_scatter_params['line'] = Line(width=2, color=line_color)
             ma_scatter_params['name'] = name + ' (sma)'
             if y2:
                 ma_scatter_params['yaxis'] = 'y2'
             self.data.append(Scatter(**ma_scatter_params))
 
-    def config_axes(self, x_sign: str=False, y_sign: str=False, y2_sign: str=False,
+    def config_axes(self, x_sign: str = False, y_sign: str = False, y2_sign: str = False,
                     x_max=False, y_max=False, y2_max=False):
         self.sign_axes(x_sign=x_sign, y_sign=y_sign, y2_sign=y2_sign)
         if x_max:
@@ -100,7 +101,7 @@ class PlotlyGraph:
         if y2_max:
             self.layout.update(yaxis2=dict(range=[0, y2_max]))
 
-    def sign_axes(self, x_sign: str=False, y_sign: str=False, y2_sign: str=False):
+    def sign_axes(self, x_sign: str = False, y_sign: str = False, y2_sign: str = False):
         if x_sign:
             self.layout.update(xaxis=dict(title=x_sign))
         if y_sign:
@@ -118,3 +119,123 @@ class PlotlyGraph:
                             # image='png', image_filename='io',
                             image_width=700, image_height=450,
                             show_link=False)
+
+
+class SarGraph:
+    def __init__(self, hostname):
+        self.stan_data = None
+        self.graph_dir = None
+        self.hostname = hostname
+
+    def __cpu(self):
+        plot_file_name = self.graph_dir + 'cpu_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация CPU')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Утилизация CPU ', x=x, y=self.stan_data['cpu_all_util'])
+        gr.append_data('Процент времени в ожидании завершения ввода\вывода', x=x, y=self.stan_data['cpu_all_iowait'])
+        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
+        gr.plot(plot_file_name)
+
+    def __cpu_cores_util(self):
+        plot_file_name = self.graph_dir + 'cpu_single_util_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация CPU', random_colors=True)
+        x = [x for x in range(len(self.stan_data['index']))]
+
+        cpu_dict = self.__get_cpu_core_dict()
+
+        for _ in cpu_dict:
+            gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
+
+        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
+        gr.plot(plot_file_name)
+
+    def __get_cpu_core_dict(self):
+        cpu_dict = set()
+        for _ in self.stan_data.keys():
+            if 'cpu' in _:
+                if 'util' in _:
+                    cpu_dict.add(_)
+        return cpu_dict
+
+    def __mem(self):
+        plot_file_name = self.graph_dir + 'mem_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация памяти')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Утилизация памяти', x=x, y=self.stan_data['mem_memused'])
+        gr.append_data('Утилизация файла подкачки', x=x, y=self.stan_data['mem_swpused'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Утилизация памяти, Гб')
+        gr.plot(plot_file_name)
+
+    def __io(self):
+        plot_file_name = self.graph_dir + 'io_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация диска, шт')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Опреации чтения в секунду', x=x, y=self.stan_data['io_rtps'])
+        gr.append_data('Операций записи в секунду', x=x, y=self.stan_data['io_wtps'])
+        gr.append_data('Операций в секунду (чтение/записи)', x=x, y=self.stan_data['io_tps'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, шт/с')
+        gr.plot(plot_file_name)
+
+    def __io_bytes(self):
+        plot_file_name = self.graph_dir + 'io_bytes_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация диска, Б/с')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Чтение байт в секунду', x=x, y=self.stan_data['io_bwrtn'])
+        gr.append_data('Запись байт в секунду', x=x, y=self.stan_data['io_bread'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, Б/c')
+        gr.plot(plot_file_name)
+
+    def __dev_util(self):
+        plot_file_name = self.graph_dir + 'dev_util_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация диска', random_colors=True)
+        x = [x for x in range(len(self.stan_data['index']))]
+
+        io_dict = self.__get_dev_dict()
+
+        for _ in io_dict:
+            gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
+
+        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация, %.')
+        gr.plot(plot_file_name)
+
+    def __get_dev_dict(self):
+        io_dict = set()
+        for _ in self.stan_data.keys():
+            if 'disk_' in _:
+                if 'util-percent' in _:
+                    io_dict.add(_)
+        return io_dict
+
+    def __queue(self):
+        plot_file_name = self.graph_dir + 'queue_' + self.hostname + '.html'
+        gr = PlotlyGraph('Срденяя загрузка')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('За 1 минуту', x=x, y=self.stan_data['queue_ldavg-1'])
+        gr.append_data('За 5 минут', x=x, y=self.stan_data['queue_ldavg-5'])
+        gr.append_data('За 15 минут', x=x, y=self.stan_data['queue_ldavg-15'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций')
+        gr.plot(plot_file_name)
+
+    def __net(self):
+        pass
+
+    def sar_graph(self, sets: set = {'cpu', 'cpu_single','mem', 'io', 'io_bytes', 'dev_util', 'queue'},
+                  graph_dir=os.path.dirname(os.path.abspath(__file__)),
+                  stan_data=''):
+
+        if not sets.issubset({'cpu', 'cpu_single', 'mem', 'io', 'io_bytes', 'dev_util', 'queue'}):
+            raise ValueError
+
+        self.graph_dir = graph_dir
+        self.stan_data = stan_data
+
+        graphs = {'cpu': self.__cpu,
+                  'cpu_single': self.__cpu_cores_util,
+                  'mem': self.__mem,
+                  'io': self.__io,
+                  'io_bytes': self.__io_bytes,
+                  'dev_util': self.__dev_util,
+                  'queue': self.__queue}
+
+        for graph in sets:
+            graphs[graph]()
