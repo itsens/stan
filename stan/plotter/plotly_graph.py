@@ -128,36 +128,62 @@ class SarGraph:
 
     def __cpu(self):
         plot_file_name = self.graph_dir + 'cpu_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация CPU, ' + self.hostname)
+        gr = PlotlyGraph('Утилизация CPU')
         x = [x for x in range(len(self.stan_data['index']))]
         gr.append_data('Утилизация CPU ', x=x, y=self.stan_data['cpu_all_util'])
         gr.append_data('Процент времени в ожидании завершения ввода\вывода', x=x, y=self.stan_data['cpu_all_iowait'])
-        gr.sign_axes(x_sign='asdf', y_sign='Утилизация CPU, %.')
+        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
         gr.plot(plot_file_name)
 
     def __cpu_single_util(self):
         pass
 
     def __mem(self):
-        pass
+        plot_file_name = self.graph_dir + 'mem_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация памяти')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Утилизация памяти', x=x, y=self.stan_data['mem_memused'])
+        gr.append_data('Утилизация файла подкачки', x=x, y=self.stan_data['mem_swpused'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Утилизация памяти, Гб')
+        gr.plot(plot_file_name)
 
     def __io(self):
-        pass
+        plot_file_name = self.graph_dir + 'io_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация диска, шт')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Опреации чтения в секунду', x=x, y=self.stan_data['io_rtps'])
+        gr.append_data('Операций записи в секунду', x=x, y=self.stan_data['io_wtps'])
+        gr.append_data('Операций в секунду (чтение/записи)', x=x, y=self.stan_data['io_tps'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, шт/с')
+        gr.plot(plot_file_name)
 
     def __io_bytes(self):
-        pass
+        plot_file_name = self.graph_dir + 'io_bytes_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация диска, Б/с')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('Чтение байт в секунду', x=x, y=self.stan_data['io_bwrtn'])
+        gr.append_data('Запись байт в секунду', x=x, y=self.stan_data['io_bread'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, Б/c')
+        gr.plot(plot_file_name)
 
     def __queue(self):
-        pass
+        plot_file_name = self.graph_dir + 'queue_' + self.hostname + '.html'
+        gr = PlotlyGraph('Срденяя загрузка')
+        x = [x for x in range(len(self.stan_data['index']))]
+        gr.append_data('За 1 минуту', x=x, y=self.stan_data['queue_ldavg-1'])
+        gr.append_data('За 5 минут', x=x, y=self.stan_data['queue_ldavg-5'])
+        gr.append_data('За 15 минут', x=x, y=self.stan_data['queue_ldavg-15'])
+        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций')
+        gr.plot(plot_file_name)
 
     def __net(self):
         pass
 
-    def sar_graph(self, sets: set = {'cpu', 'mem', 'io', 'queue'},
+    def sar_graph(self, sets: set = {'cpu', 'mem', 'io', 'io_bytes', 'queue'},
                   graph_dir='вычислять текущую директорию',  # todo
                   stan_data=''):
 
-        if not sets.issubset({'cpu', 'mem', 'io', 'queue'}):
+        if not sets.issubset({'cpu', 'mem', 'io', 'io_bytes', 'queue'}):
             raise ValueError
 
         self.graph_dir = graph_dir
@@ -165,7 +191,8 @@ class SarGraph:
 
         graphs = {'cpu': self.__cpu,
                   'mem': self.__mem,
-                  'io': self.__queue,
+                  'io': self.__io,
+                  'io_bytes': self.__io_bytes,
                   'queue': self.__queue}
 
         for graph in sets:
