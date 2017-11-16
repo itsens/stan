@@ -3,6 +3,7 @@ import plotly
 from plotly.graph_objs import Scatter, Layout, Line
 import numpy
 from random import randint
+import os
 
 
 class PlotlyGraph:
@@ -135,8 +136,26 @@ class SarGraph:
         gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
         gr.plot(plot_file_name)
 
-    def __cpu_single_util(self):
-        pass
+    def __cpu_cores_util(self):
+        plot_file_name = self.graph_dir + 'cpu_single_util_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация CPU', random_colors=True)
+        x = [x for x in range(len(self.stan_data['index']))]
+
+        cpu_dict = self.__get_cpu_core_dict()
+
+        for _ in cpu_dict:
+            gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
+
+        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
+        gr.plot(plot_file_name)
+
+    def __get_cpu_core_dict(self):
+        cpu_dict = set()
+        for _ in self.stan_data.keys():
+            if 'cpu' in _:
+                if 'util' in _:
+                    cpu_dict.add(_)
+        return cpu_dict
 
     def __mem(self):
         plot_file_name = self.graph_dir + 'mem_' + self.hostname + '.html'
@@ -166,6 +185,27 @@ class SarGraph:
         gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, Б/c')
         gr.plot(plot_file_name)
 
+    def __dev_util(self):
+        plot_file_name = self.graph_dir + 'dev_util_' + self.hostname + '.html'
+        gr = PlotlyGraph('Утилизация диска', random_colors=True)
+        x = [x for x in range(len(self.stan_data['index']))]
+
+        io_dict = self.__get_dev_dict()
+
+        for _ in io_dict:
+            gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
+
+        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация, %.')
+        gr.plot(plot_file_name)
+
+    def __get_dev_dict(self):
+        io_dict = set()
+        for _ in self.stan_data.keys():
+            if 'disk_' in _:
+                if 'util-percent' in _:
+                    io_dict.add(_)
+        return io_dict
+
     def __queue(self):
         plot_file_name = self.graph_dir + 'queue_' + self.hostname + '.html'
         gr = PlotlyGraph('Срденяя загрузка')
@@ -179,20 +219,22 @@ class SarGraph:
     def __net(self):
         pass
 
-    def sar_graph(self, sets: set = {'cpu', 'mem', 'io', 'io_bytes', 'queue'},
-                  graph_dir='вычислять текущую директорию',  # todo
+    def sar_graph(self, sets: set = {'cpu', 'cpu_single','mem', 'io', 'io_bytes', 'dev_util', 'queue'},
+                  graph_dir=os.path.dirname(os.path.abspath(__file__)),
                   stan_data=''):
 
-        if not sets.issubset({'cpu', 'mem', 'io', 'io_bytes', 'queue'}):
+        if not sets.issubset({'cpu', 'cpu_single', 'mem', 'io', 'io_bytes', 'dev_util', 'queue'}):
             raise ValueError
 
         self.graph_dir = graph_dir
         self.stan_data = stan_data
 
         graphs = {'cpu': self.__cpu,
+                  'cpu_single': self.__cpu_cores_util,
                   'mem': self.__mem,
                   'io': self.__io,
                   'io_bytes': self.__io_bytes,
+                  'dev_util': self.__dev_util,
                   'queue': self.__queue}
 
         for graph in sets:
