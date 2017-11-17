@@ -129,6 +129,8 @@ class JmeterCsvParser(Parser):
 
         self.data = StanData()
 
+        self.__metrics = None
+
     def __read_csv_to_df(self):
         read_csv_param = dict(index_col=['timeStamp'],
                               low_memory=True,
@@ -180,12 +182,6 @@ class JmeterCsvParser(Parser):
         '''
         pass
 
-    def __sample_all(self):
-        '''
-
-        :return: успешные/неуспешные запросы за тест
-        '''
-
     def __thread_per_time(self):
         quant = self.pandas_data_frame['allThreads'].groupby(
             self.pandas_data_frame.index.map(
@@ -194,11 +190,19 @@ class JmeterCsvParser(Parser):
         for ts in quant.keys():
             self.data.append(ts, StanDict(allThreads=quant.get(ts)))
 
+    def __get_unique_label(self):
+        label = set()
+        for _ in self.pandas_data_frame['label'].unique():
+            label.add(_)
+        return label
+
     def __analyze(self):
         self.__success_samples_per_time()
         self.__error_samples_per_time()
         self.__mean_per_time()
         self.__thread_per_time()
+        self.__get_unique_label()
+        self.__ff()
 
     def get_stat(self) -> StanData:
         return self.data

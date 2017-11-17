@@ -42,5 +42,6 @@ if __name__ == '__main__':
     jm_stat = jm_parser.get_stat()
     flat_stat = jm_stat.flat()
 
-    samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
-    mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)
+    # print(flat_stat.keys())
+    # samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
+    # mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)
