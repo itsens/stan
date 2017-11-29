@@ -219,7 +219,7 @@ class SarGraph:
     def __net(self):
         pass
 
-    def sar_graph(self, sets: set = {'cpu', 'cpu_single','mem', 'io', 'io_bytes', 'dev_util', 'queue'},
+    def sar_graph(self, sets: set = {'cpu', 'cpu_single', 'mem', 'io', 'io_bytes', 'dev_util', 'queue'},
                   graph_dir=os.path.dirname(os.path.abspath(__file__)),
                   stan_data=''):
 

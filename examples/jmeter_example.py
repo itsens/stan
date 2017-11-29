@@ -20,6 +20,7 @@ def samples_per_time(GRAPH_FILE, flat_stat):
     graph.config_axes(x_sign='Длительность теста, s',
                       y_sign='запрос/с')
     graph.plot(GRAPH_FILE)
+    print('graph complite:  {}'.format(GRAPH_FILE))
 
 
 def mean_per_time_all(GRAPH_FILE, flat_stat):
@@ -33,6 +34,7 @@ def mean_per_time_all(GRAPH_FILE, flat_stat):
                       y_sign='mc',
                       y2_sign='запрос/c')
     graph.plot(GRAPH_FILE)
+    print('graph complite:  {}'.format(GRAPH_FILE))
 
 
 if __name__ == '__main__':
@@ -41,6 +43,8 @@ if __name__ == '__main__':
     jm_parser.parse(TEST_CSV)
     jm_stat = jm_parser.get_stat()
     flat_stat = jm_stat.flat()
+
+    pprint('keys statistics jmeter logs: {}'.format(flat_stat.keys()))
 
     samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
     mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)

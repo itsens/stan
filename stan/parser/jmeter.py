@@ -1,4 +1,4 @@
-__autor__ = 'borodenkov.e.a@gmail.com'
+__author__ = 'borodenkov.e.a@gmail.com'
 
 from stan.core import StanDict, StanData
 from .parser import Parser, ParserError
@@ -129,6 +129,8 @@ class JmeterCsvParser(Parser):
 
         self.data = StanData()
 
+        self.__metrics = None
+
     def __read_csv_to_df(self):
         read_csv_param = dict(index_col=['timeStamp'],
                               low_memory=True,
@@ -138,10 +140,6 @@ class JmeterCsvParser(Parser):
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
 
     def __success_samples_per_time(self):
-        '''
-
-        :return: успешные запросы за sampling time
-        '''
         samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
             self.pandas_data_frame.index.map(
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
@@ -150,10 +148,6 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
 
     def __error_samples_per_time(self):
-        '''
-
-        :return: возвращает не успешные запросы за sampling time
-        '''
         samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
             self.pandas_data_frame.index.map(
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
@@ -162,10 +156,6 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
 
     def __mean_per_time(self):
-        '''
-
-        :return: арифметическое среднее значение за sampling time
-        '''
         _elapsed = self.pandas_data_frame['elapsed'].groupby(
             self.pandas_data_frame.index.map(
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
@@ -174,17 +164,7 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
 
     def __quantile_all(self):
-        '''
-
-        :return: 90/95/99 перцентилей за тест.
-        '''
         pass
-
-    def __sample_all(self):
-        '''
-
-        :return: успешные/неуспешные запросы за тест
-        '''
 
     def __thread_per_time(self):
         quant = self.pandas_data_frame['allThreads'].groupby(
@@ -194,11 +174,18 @@ class JmeterCsvParser(Parser):
         for ts in quant.keys():
             self.data.append(ts, StanDict(allThreads=quant.get(ts)))
 
+    def __get_unique_label(self):
+        label = set()
+        for _ in self.pandas_data_frame['label'].unique():
+            label.add(_)
+        return label
+
     def __analyze(self):
         self.__success_samples_per_time()
         self.__error_samples_per_time()
         self.__mean_per_time()
         self.__thread_per_time()
+        self.__get_unique_label()
 
     def get_stat(self) -> StanData:
         return self.data
