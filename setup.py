@@ -11,5 +11,6 @@ setup(
     description='Stat Analyzer for load testers',
     install_requires=['tqdm',
                       'plotly',
-                      'numpy']
+                      'numpy',
+                      'pandas']
 )

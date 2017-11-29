@@ -1,4 +1,4 @@
-__autor__ = 'borodenkov.e.a@gmail.com'
+__author__ = 'borodenkov.e.a@gmail.com'
 
 from stan.core import StanDict, StanData
 from .parser import Parser, ParserError
@@ -140,10 +140,6 @@ class JmeterCsvParser(Parser):
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
 
     def __success_samples_per_time(self):
-        '''
-
-        :return: успешные запросы за sampling time
-        '''
         samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
             self.pandas_data_frame.index.map(
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
@@ -152,10 +148,6 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
 
     def __error_samples_per_time(self):
-        '''
-
-        :return: возвращает не успешные запросы за sampling time
-        '''
         samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
             self.pandas_data_frame.index.map(
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
@@ -164,10 +156,6 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
 
     def __mean_per_time(self):
-        '''
-
-        :return: арифметическое среднее значение за sampling time
-        '''
         _elapsed = self.pandas_data_frame['elapsed'].groupby(
             self.pandas_data_frame.index.map(
                 lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
@@ -176,10 +164,6 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
 
     def __quantile_all(self):
-        '''
-
-        :return: 90/95/99 перцентилей за тест.
-        '''
         pass
 
     def __thread_per_time(self):
@@ -202,7 +186,6 @@ class JmeterCsvParser(Parser):
         self.__mean_per_time()
         self.__thread_per_time()
         self.__get_unique_label()
-        self.__ff()
 
     def get_stat(self) -> StanData:
         return self.data
