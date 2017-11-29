@@ -1,3 +1,5 @@
+import pprint
+
 __author__ = 'borodenkov.e.a@gmail.com'
 
 from stan.core import StanDict, StanData
@@ -163,9 +165,6 @@ class JmeterCsvParser(Parser):
         for ts in _elapsed.keys():
             self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
 
-    def __quantile_all(self):
-        pass
-
     def __thread_per_time(self):
         quant = self.pandas_data_frame['allThreads'].groupby(
             self.pandas_data_frame.index.map(
@@ -180,12 +179,52 @@ class JmeterCsvParser(Parser):
             label.add(_)
         return label
 
+    def __get_analize(self):
+        df = self.__get_df_label()
+        print(' ')
+        print('#results jmeter:')
+
+        sample_count = self.pandas_data_frame['SampleCount'].sum()
+        error_count = self.pandas_data_frame['ErrorCount'].sum()
+        percent_error = error_count / (sample_count + error_count) * 100
+        print('Успешных запросов: ', sample_count, '  ', 'Ошибки:  ', error_count)
+        print('Недоступность продукта: {} %;'.format(percent_error), ' Доступность продукта: {} %;'.format(100 - percent_error))
+        for label in self.__get_unique_label():
+            quantle_9 = df[label].quantile(0.9)
+            quantle_95 = df[label].quantile(0.95)
+            quantle_99 = df[label].quantile(0.99)
+            mm = df[label].mean()
+            print('label: "{}"'.format(label))
+            print('90: {}'.format(round(quantle_9, 2)),
+                  ';  95: {}'.format(round(quantle_95, 2)),
+                  ';  99: {}'.format(round(quantle_99, 2)),
+                  ';  mean: {}'.format(round(mm, 2)))
+        print(' ')
+
+    def __label_per_time(self):
+        df = self.__get_df_label()
+        for ts in df.index:
+            record = StanDict()
+            for label in self.__get_unique_label():
+                record[label] = df.get_value(ts, label)
+            self.data.append(ts, record)
+        print(self.__get_unique_label())
+
+    def __get_df_label(self):
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df = self.pandas_data_frame.pivot_table(columns=['label'],
+                                                index='timeStamp_round',
+                                                values='elapsed',
+                                                aggfunc=pd.np.mean)
+        return df
+
     def __analyze(self):
         self.__success_samples_per_time()
         self.__error_samples_per_time()
         self.__mean_per_time()
         self.__thread_per_time()
-        self.__get_unique_label()
+        self.__label_per_time()
+        self.__get_analize()
 
     def get_stat(self) -> StanData:
         return self.data
