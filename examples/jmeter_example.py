@@ -7,7 +7,7 @@ import os
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_XML = FILE_DIR + '/files/jm_results.xml'
-TEST_CSV = FILE_DIR + '/files/jm_results_sg1000.csv'
+TEST_CSV = FILE_DIR + '/files/jm_sg.csv'
 GRAPH_FILE = FILE_DIR + '/files/{}.html'
 # TEST_XML = FILE_DIR + '/files/jmeter.b2b.xml'
 
@@ -36,6 +36,17 @@ def mean_per_time_all(GRAPH_FILE, flat_stat):
     graph.plot(GRAPH_FILE)
     print('graph complite:  {}'.format(GRAPH_FILE))
 
+def label(GRAPH_FILE, flat_stat):
+    gr = PlotlyGraph('Длительность отлика')
+    gr.append_data(name='Авторизация', x=flat_stat['index'], y=flat_stat['httpr: auth'])
+    gr.append_data(name='Выписка ЕГРИП', x=flat_stat['index'], y=flat_stat['httpr: get fns_egrip_full_smev3'])
+    gr.append_data(name='Выписка ЕГРЮЛ', x=flat_stat['index'], y=flat_stat['httpr: get fns_egrul_full_smev3'])
+    gr.append_data(name='asdf', x=flat_stat['index'], y=flat_stat['SampleCount'], y2=True)
+    gr.sign_axes(x_sign='asdf', y_sign='мс', y2_sign=flat_stat)
+    gr.plot(GRAPH_FILE)
+    print('graph complite:  {}'.format(GRAPH_FILE))
+
+
 
 if __name__ == '__main__':
     print(TEST_CSV)
@@ -48,3 +59,4 @@ if __name__ == '__main__':
 
     samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
     mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)
+    label(GRAPH_FILE.format('label'), flat_stat=flat_stat)
