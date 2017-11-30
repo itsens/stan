@@ -2,6 +2,14 @@ from collections import defaultdict
 import pickle
 
 
+class MetricsIntersection(KeyError):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class StanDict(dict):
     """
     Is an extended dict() with custom method keys() for flexible key filtering
@@ -26,7 +34,8 @@ class StanDict(dict):
             if key not in result:
                 result[key] = other[key]
             else:
-                raise KeyError('Keys intersection')
+                # print('[WARNING] Keys intersection (Key: {})'.format(key))
+                raise MetricsIntersection(key)
 
         return result
 
@@ -99,7 +108,11 @@ class StanData(defaultdict):
             result[key] = self[key]
 
         for key in other:
-            result[key] = result[key] + other[key]
+            try:
+                result[key] = result[key] + other[key]
+            except MetricsIntersection as metric:
+                print('[WARNING] Metrics intersection (Metric: {metric}) in timestamp {ts}'.format(metric=metric,
+                                                                                                   ts=key))
 
         return result
 
@@ -169,7 +182,11 @@ class StanData(defaultdict):
             raise TypeError('The value must be StanDict')
         for metric in stan_dict:
             self.metrics.add(metric)
-        self[timestamp] += stan_dict
+        try:
+            self[timestamp] += stan_dict
+        except MetricsIntersection as metric:
+            print('[WARNING] Keys intersection (Metric: {metric}) in timestamp {ts}'.format(metric=metric,
+                                                                                            ts=timestamp))
 
     def flat(self):
         """
