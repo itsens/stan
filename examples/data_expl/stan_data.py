@@ -30,10 +30,10 @@ if __name__ == '__main__':
     pprint(data_3.flat())
 
     # Save stat to file
-    data_3.save('/tmp/test.pkl')
+    data_3.save('test.pkl')
 
     # Load stat from file
-    data_4 = StanData.load('/tmp/test.pkl')
+    data_4 = StanData.load('test.pkl')
 
     print('\n********* Loaded from file *********')
     pprint(data_4)
