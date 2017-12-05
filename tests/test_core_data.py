@@ -32,22 +32,6 @@ class TestStanData(unittest.TestCase):
         self.dd.append(1499763761, StanDict(m1=2, m2=2))
         self.dd.append(1499763763, StanDict(m4=4, m5=5))
 
-        self.rd = StanData()
-        self.rd.append(1, StanDict(m4=4.0, m5=5.0, m2=1.0))
-        self.rd.append(2, StanDict(m4=None, m5=None, m2=2.0))
-
-        self.rd_f = StanFlatData()
-        self.rd_f['m1'] = [1, 2]
-        self.rd_f['m2'] = [1.0, 2.0]
-        self.rd_f['m4'] = [4.0, None]
-        self.rd_f['m5'] = [5.0, None]
-
-        self.d1_f = StanFlatData()
-        self.d1_f['timestamp'] = [1499763761, 1499763762]
-        self.d1_f['index'] = [0, 1]
-        self.d1_f['m2'] = [2, 1]
-        self.d1_f['m1'] = [2, 1]
-
     def test_len_dd(self):
         dd = self.d1 + self.d2
         self.assertEqual(dd, self.dd)
@@ -73,13 +57,29 @@ class TestStanData(unittest.TestCase):
         pass
 
     def test_flat(self):
-        self.assertEqual(self.d1.flat(),self.d1_f)
+        self.d1_f = StanFlatData()
+        self.d1_f['timestamp'] = [1499763761, 1499763762]
+        self.d1_f['index'] = [0, 1]
+        self.d1_f['m2'] = [2, 1]
+        self.d1_f['m1'] = [2, 1]
+
+        self.assertEqual(self.d1.flat(), self.d1_f)
 
     def test_relate(self):
+        self.rd = StanData()
+        self.rd.append(1, StanDict(m4=4.0, m5=5.0, m2=1.0))
+        self.rd.append(2, StanDict(m4=None, m5=None, m2=2.0))
+
         related_data = self.dd.relate(by_metric='m1', flat=False)
         self.assertEqual(self.rd, related_data)
 
     def test_relate_flat(self):
+        self.rd_f = StanFlatData()
+        self.rd_f['m1'] = [1, 2]
+        self.rd_f['m2'] = [1.0, 2.0]
+        self.rd_f['m4'] = [4.0, None]
+        self.rd_f['m5'] = [5.0, None]
+
         related_data = self.dd.relate(by_metric='m1')
         self.assertEqual(related_data, self.rd_f)
 
