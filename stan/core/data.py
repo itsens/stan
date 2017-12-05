@@ -178,6 +178,7 @@ class StanData(defaultdict):
         return related_data
 
     def save(self, file_path: str):
+        # todo: parameter save to JSON
         with open(file_path, 'wb') as pkl:
             pickle.dump(self, pkl, pickle.HIGHEST_PROTOCOL)
 

@@ -188,7 +188,8 @@ class JmeterCsvParser(Parser):
         error_count = self.pandas_data_frame['ErrorCount'].sum()
         percent_error = error_count / (sample_count + error_count) * 100
         print('Успешных запросов: ', sample_count, '  ', 'Ошибки:  ', error_count)
-        print('Недоступность продукта: {} %;'.format(percent_error), ' Доступность продукта: {} %;'.format(100 - percent_error))
+        print('Недоступность продукта: {} %;'.format(percent_error),
+              ' Доступность продукта: {} %;'.format(100 - percent_error))
         for label in self.__get_unique_label():
             quantle_9 = df[label].quantile(0.9)
             quantle_95 = df[label].quantile(0.95)
