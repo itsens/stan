@@ -12,3 +12,5 @@ if __name__ == '__main__':
     sar_parser.parse(TEST_XML)
     stat = sar_parser.get_stat()
     print(sar_parser.hostname)
+    # pprint(stat)		
+    pprint(stat.flat())		
