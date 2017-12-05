@@ -56,8 +56,7 @@ class TestStanData(unittest.TestCase):
         dd = self.d1 + self.d2
         self.assertEqual(len(dd.metrics), 4)
 
-    def save_and_load(self):
-        ''' TODO: dont work load'''
+    def test_save_and_load(self):
         self.d1.save('out.pkl')
         dd1 = StanData.load('out.pkl')
         self.assertEqual(dd1, self.d1)

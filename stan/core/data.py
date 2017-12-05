@@ -20,6 +20,9 @@ class StanDict(dict):
         super().__init__(**kwargs)
         self.index_method = index_method
 
+    def __reduce__(self):
+        return super().__reduce__()
+
     def __add__(self, other):
         if type(other) != type(self):
             raise TypeError('Different types')
@@ -116,9 +119,15 @@ class StanData(defaultdict):
 
         return result
 
+    def __getstate__(self):
+        return self.__dict__.copy()
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
     def __reduce__(self):
         t = super().__reduce__()
-        return (t[0], ()) + t[2:]
+        return (t[0], ()) + (self.__getstate__(),) + t[3:]
 
     def _index(self, stan_dict: StanDict):
         if type(stan_dict) != StanDict:
