@@ -18,6 +18,7 @@ class PlotlyGraph:
 
         self.data = []
         self.layout = Layout(title=graph_title, separators=', ')
+        # self.layout = Layout(title=graph_title, separators=', ', width=1000, height=900) # TODO: resolution for PNG
         # self.layout.update(titlefont=dict(size=36))
         # self.layout.update(width=900, height=500)
         # self.layout.update(font=dict(family='Courier New, monospace', size=25, color='#7f7f7f'))
@@ -31,6 +32,9 @@ class PlotlyGraph:
                                       exponentformat='none'))
         self.layout.update(legend=dict(orientation='h', xanchor='middle', y=-0.3))
 
+        self.shapes = []
+
+        self.max_x = 0
         self.max_y = 0
         self.max_y2 = 0
 
@@ -55,6 +59,9 @@ class PlotlyGraph:
             line_color = self._random_color()
         else:
             line_color = next(self.default_colors)
+
+        self.max_x = max([self.max_x, max(x)])
+
         if y2:
             self.max_y2 = max([self.max_y2, max(n for n in y if n is not None)])
             self.layout.update(yaxis2=dict(title='y2_axis', showline=True, anchor='x', overlaying='y',
@@ -109,10 +116,39 @@ class PlotlyGraph:
         if y2_sign:
             self.layout.update(yaxis2=dict(title=y2_sign))
 
+    def add_vertical_line(self, x, color='rgb(55, 128, 191)', width=3):
+        self.shapes.append(dict(type='line',
+                                x0=x,
+                                y0=0,
+                                x1=x,
+                                y1=None,
+                                line=dict(color=color,
+                                          width=width)))
+
+    def add_horizontal_line(self, y, color='rgb(55, 128, 191)', width=3):
+        self.shapes.append(dict(type='line',
+                                x0=0,
+                                y0=y,
+                                x1=None,
+                                y1=y,
+                                line=dict(color=color,
+                                          width=width)))
+
+    def add_redline(self, x):
+        self.add_vertical_line(x=x, color='red', width=3)
+
     def plot(self, file_name):
         if len(self.data) == 0:
             print('No data to plot')
             return 1
+
+        if len(self.shapes) > 0:
+            for shape in self.shapes:
+                if shape['x1'] is None:
+                    shape['x1'] = self.max_x
+                elif shape['y1'] is None:
+                    shape['y1'] = self.max_y
+            self.layout.update(shapes=self.shapes)
 
         plotly.offline.plot(dict(layout=self.layout, data=self.data),
                             filename=file_name, auto_open=False,
