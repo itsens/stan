@@ -66,7 +66,7 @@ class PlotlyGraph:
             self.max_y2 = max([self.max_y2, max(n for n in y if n is not None)])
             self.layout.update(yaxis2=dict(title='y2_axis', showline=True, anchor='x', overlaying='y',
                                            side='right', showticklabels=True, ticks='outside', showgrid=False,
-                                           range=[0, self.max_y2]))
+                                           separatethousands=True, range=[0, self.max_y2]))
         else:
             self.max_y = max([self.max_y, max(n for n in y if n is not None)])
             self.layout.update(yaxis=dict(range=[0, self.max_y]))
