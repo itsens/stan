@@ -7,3 +7,6 @@ stan/__pycache__/
 stan/core/__pycache__/
 stan/parser/__pycache__/
 stan/plotter/__pycache__/
+
+
+.venv/
