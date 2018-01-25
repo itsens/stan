@@ -1,5 +1,7 @@
 import pprint
 
+from tqdm import tqdm
+
 __author__ = 'borodenkov.e.a@gmail.com'
 
 from stan.core import StanDict, StanData
@@ -140,6 +142,14 @@ class JmeterCsvParser(Parser):
                               converters={'timeStamp': lambda a: float(a) / self.sec})
 
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+        with open(self.file_path) as f:
+            self.stat_length = sum(1 for _ in f)
+            print('Jmter log stat length {}:    '.format(self.stat_length))
+            f.close()
+
+        with tqdm(desc='Analyzing sar stat', total=self.stat_length) as pbar:
+            self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+            pbar.update(1)
 
     def __success_samples_per_time(self):
         samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
