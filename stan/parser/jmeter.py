@@ -141,15 +141,15 @@ class JmeterCsvParser(Parser):
                               na_values=[' ', '', 'null'],
                               converters={'timeStamp': lambda a: float(a) / self.sec})
 
-        self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
         with open(self.file_path) as f:
             self.stat_length = sum(1 for _ in f)
-            print('Jmter log stat length {}:    '.format(self.stat_length))
+            print('Jmter log stat length {0:,}:    '.format(self.stat_length).replace(',', ' '))
             f.close()
 
-        with tqdm(desc='Analyzing sar stat', total=self.stat_length) as pbar:
-            self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
-            pbar.update(1)
+        self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+        print('len pd:  {0:,}'.format(len(self.pandas_data_frame.index)).replace(',', ' '))
+        print('size pd: {0:,}'.format(self.pandas_data_frame.size).replace(',', ' '))
+        # pbar.update(1)
 
     def __success_samples_per_time(self):
         samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
@@ -229,6 +229,34 @@ class JmeterCsvParser(Parser):
                                                 aggfunc=pd.np.mean)
         return df
 
+    def __get_df_error_sample(self):
+        '''возвращает таблицу ошибочных запросов в секунду. В заголовке уникальные запросы'''
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='ErrorCount',
+            aggfunc=pd.np.sum,
+        )
+        return df
+
+    def __len_test(self):
+        '''возвращает длину теста в секундах.'''
+        _ = self.pandas_data_frame['allThreads'].groupby(
+            self.pandas_data_frame.index.map(lambda a: round(a / 1) * 1)).mean()
+        return len(_)
+
+    def get_df_sample(self):
+        '''возвращает таблицу rps. В заголовке униклаьные запросы'''
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='SampleCount',
+            aggfunc=pd.np.sum,
+        )
+        return df
+
     def __analyze(self):
         self.__success_samples_per_time()
         self.__error_samples_per_time()
@@ -244,3 +272,7 @@ class JmeterCsvParser(Parser):
         self.file_path = file_path
         self.__read_csv_to_df()
         self.__analyze()
+
+    def parse2(self, file_path: str):
+        self.file_path = file_path
+        self.__read_csv_to_df()
