@@ -1,13 +1,244 @@
-import pprint
-
-from tqdm import tqdm
-
 __author__ = 'borodenkov.e.a@gmail.com'
-
+import time
 from stan.core import StanDict, StanData
 from .parser import Parser, ParserError
 from xml.etree.ElementTree import iterparse
 import pandas as pd
+
+
+class Profiler(object):
+    def __enter__(self):
+        self._startTime = time.time()
+
+    def __exit__(self, type, value, traceback):
+        print("Time: {:.3f} sec".format(time.time() - self._startTime))
+
+
+class JmeterCsvParser(Parser):
+    def __init__(self):
+        self.file_path = None
+        self.pandas_data_frame = None
+        self.sec = 1000
+        self.sampling_time = 1
+
+        self.label = set()
+
+        self.data = StanData()
+
+        self.__metrics = None
+
+    def __read_csv_to_df(self):
+        """
+
+        :return:
+        """
+        with Profiler() as p:
+            print('\n\n')
+            read_csv_param = dict(
+                index_col=['timeStamp'],
+                low_memory=True,
+                na_values=[' ', '', 'null'],
+                converters={'timeStamp': lambda a: float(a) / self.sec}
+            )
+
+            with open(self.file_path) as f:
+                self.stat_length = sum(1 for _ in f)
+                print('\tJmter log stat length {0:,}:    '.format(self.stat_length).replace(',', ' '))
+                f.close()
+
+            self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+            print('\tВремя преобразования csv в DataFrame:')
+
+    def __success_samples_per_time(self):
+        """
+
+        :return:
+        """
+        samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
+
+        for ts in samples_per_time.keys():
+            self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
+
+    def __error_samples_per_time(self):
+        """
+
+        :return:
+        """
+        samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
+
+        for ts in samples_per_time.keys():
+            self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
+
+    def __mean_per_time(self):
+        """
+        Сренднее значение по полю elapsed с аггрегацией self.sampling_time
+        :return:
+        """
+        _elapsed = self.pandas_data_frame['elapsed'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).mean()
+
+        for ts in _elapsed.keys():
+            self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
+
+    def __thread_per_time(self):
+        """
+
+        :return:
+        """
+        quant = self.pandas_data_frame['allThreads'].groupby(
+            self.pandas_data_frame.index.map(
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).mean()
+
+        for ts in quant.keys():
+            self.data.append(ts, StanDict(allThreads=quant.get(ts)))
+
+    def __get_unique_label(self):
+        '''Получение списка уникальных операций'''
+        for _ in self.pandas_data_frame['label'].unique():
+            self.label.add(_)
+        return self.label
+
+    def __get_analize(self):
+        """
+        Анализ результатов теста по логу jmeter.
+        Считает минимальные\максимальные значение
+
+        :return:
+        """
+        with Profiler() as p:
+            print(self.pandas_data_frame.columns.values)
+            print('\tlen pd:  {0:,}'.format(len(self.pandas_data_frame.index)).replace(',', ' '))
+            print('\tsize pd: {0:,}'.format(self.pandas_data_frame.size).replace(',', ' '))
+            print('\tfile in pd:  {}'.format(self.file_path))
+
+            print('\n')
+            succes_sample = self.pandas_data_frame['SampleCount'].sum()
+            error_sample = self.pandas_data_frame['ErrorCount'].sum()
+            print('\tsucces sample:   {0:,}'.format(succes_sample).replace(',', ' '))
+            print('\terror sample:   {0:,}'.format(error_sample).replace(',', ' '))
+            df2 = self.__get_df_label(self.pandas_data_frame)
+            sample = self.__get_df_sample(self.pandas_data_frame)
+            error_sample = self.__error_samples_per_time(self.pandas_data_frame)
+            print('\tСписок уникальных запросов:  ')
+            for label in self.__get_unique_label(self.pandas_data_frame):
+                print(
+                    '\tlabel: {}\n\t\t'
+                    'rps: {}\n\t\t'
+                    'count_test: {}\n\t\t'
+                    'error_count_test: {}\n\t\t'
+                    'elapsed (ms) mean: {}\n\t\t'
+                    'min: {}\n\t\t'
+                    'max: {}\n'.format(
+                        label,
+                        round(sample[label].mean(), 1),
+                        round(sample[label].sum(), 1),
+                        round(error_sample[label].sum(), 1),
+                        round(df2[label].mean(), 1),
+                        round(df2[label].min(), 1),
+                        round(df2[label].max(), 1),
+                    ))
+            print('Время анализа DataFrame: ')
+
+    def __label_per_time(self):
+        """
+
+        :return:
+        """
+
+        df = self.__get_df_label()
+        for ts in df.index:
+            record = StanDict()
+            for label in self.__get_unique_label():
+                record[label] = df.get_value(ts, label)
+            self.data.append(ts, record)
+        print(self.__get_unique_label())
+
+    def __get_df_label(self):
+        """
+        Раварачиваем таблицу по уникальным label
+        timestam/label|label1|label2|
+        1233          |elapsed|elapse|
+        :return:
+        """
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+
+        df = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='elapsed',
+            aggfunc=pd.np.mean,
+        )
+
+        return df
+
+    def __get_df_error_sample(self):
+        """
+        возвращает таблицу ошибочных запросов в секунду. В заголовке уникальные запросы
+
+        :return:
+        """
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='ErrorCount',
+            aggfunc=pd.np.sum,
+        )
+        return df
+
+    def __len_test(self):
+        """
+        возвращает длину теста в секундах.
+
+        :return:
+        """
+        _ = self.pandas_data_frame['allThreads'].groupby(
+            self.pandas_data_frame.index.map(lambda a: round(a / 1) * 1)).mean()
+        return len(_)
+
+    def get_df_sample(self):
+        """
+        возвращает таблицу rps. В заголовке уникальные запросы
+
+        :return:
+        """
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='SampleCount',
+            aggfunc=pd.np.sum,
+        )
+        return df
+
+    def __analyze(self):
+        with Profiler() as p:
+            self.__success_samples_per_time()
+            self.__error_samples_per_time()
+            self.__mean_per_time()
+            self.__thread_per_time()
+            # self.__label_per_time()
+            self.__get_analize()
+            print('Время преобразование DataFrame to StanData: ')
+
+    def get_stat(self) -> StanData:
+        return self.data
+
+    def parse(self, file_path: str):
+        self.file_path = file_path
+        self.__read_csv_to_df()
+        self.__analyze()
+
+    def parse2(self, file_path: str):
+        '''Парсинг больших файлов'''
+        self.file_path = file_path
+        self.__read_csv_to_df()
+        self.__analyze()
 
 
 class JmeterXmlParser(Parser):
@@ -122,157 +353,3 @@ class JmeterXmlParser(Parser):
         elif data_format == 'joined':
             # TODO: реализовать
             return self.data
-
-
-class JmeterCsvParser(Parser):
-    def __init__(self):
-        self.file_path = None
-        self.pandas_data_frame = None
-        self.sec = 1000
-        self.sampling_time = 1
-
-        self.data = StanData()
-
-        self.__metrics = None
-
-    def __read_csv_to_df(self):
-        read_csv_param = dict(index_col=['timeStamp'],
-                              low_memory=True,
-                              na_values=[' ', '', 'null'],
-                              converters={'timeStamp': lambda a: float(a) / self.sec})
-
-        with open(self.file_path) as f:
-            self.stat_length = sum(1 for _ in f)
-            print('Jmter log stat length {0:,}:    '.format(self.stat_length).replace(',', ' '))
-            f.close()
-
-        self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
-        print('len pd:  {0:,}'.format(len(self.pandas_data_frame.index)).replace(',', ' '))
-        print('size pd: {0:,}'.format(self.pandas_data_frame.size).replace(',', ' '))
-        # pbar.update(1)
-
-    def __success_samples_per_time(self):
-        samples_per_time = self.pandas_data_frame['SampleCount'].groupby(
-            self.pandas_data_frame.index.map(
-                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()  # TODO: round?
-
-        for ts in samples_per_time.keys():
-            self.data.append(ts, StanDict(SampleCount=samples_per_time.get(ts)))
-
-    def __error_samples_per_time(self):
-        samples_per_time = self.pandas_data_frame['ErrorCount'].groupby(
-            self.pandas_data_frame.index.map(
-                lambda a: round(a / self.sampling_time) * self.sampling_time)).sum()
-
-        for ts in samples_per_time.keys():
-            self.data.append(ts, StanDict(ErrorCount=samples_per_time.get(ts)))
-
-    def __mean_per_time(self):
-        _elapsed = self.pandas_data_frame['elapsed'].groupby(
-            self.pandas_data_frame.index.map(
-                lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
-
-        for ts in _elapsed.keys():
-            self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
-
-    def __thread_per_time(self):
-        quant = self.pandas_data_frame['allThreads'].groupby(
-            self.pandas_data_frame.index.map(
-                lambda a: round(a / self.sampling_time) * self.sampling_time)).mean()
-
-        for ts in quant.keys():
-            self.data.append(ts, StanDict(allThreads=quant.get(ts)))
-
-    def __get_unique_label(self):
-        label = set()
-        for _ in self.pandas_data_frame['label'].unique():
-            label.add(_)
-        return label
-
-    def __get_analize(self):
-        df = self.__get_df_label()
-        print(' ')
-        print('#results jmeter:')
-
-        sample_count = self.pandas_data_frame['SampleCount'].sum()
-        error_count = self.pandas_data_frame['ErrorCount'].sum()
-        percent_error = error_count / (sample_count + error_count) * 100
-        print('Успешных запросов: ', sample_count, '  ', 'Ошибки:  ', error_count)
-        print('Недоступность продукта: {} %;'.format(percent_error),
-              ' Доступность продукта: {} %;'.format(100 - percent_error))
-        for label in self.__get_unique_label():
-            quantle_9 = df[label].quantile(0.9)
-            quantle_95 = df[label].quantile(0.95)
-            quantle_99 = df[label].quantile(0.99)
-            mm = df[label].mean()
-            print('label: "{}"'.format(label))
-            print('90: {}'.format(round(quantle_9, 2)),
-                  ';  95: {}'.format(round(quantle_95, 2)),
-                  ';  99: {}'.format(round(quantle_99, 2)),
-                  ';  mean: {}'.format(round(mm, 2)))
-        print(' ')
-
-    def __label_per_time(self):
-        df = self.__get_df_label()
-        for ts in df.index:
-            record = StanDict()
-            for label in self.__get_unique_label():
-                record[label] = df.get_value(ts, label)
-            self.data.append(ts, record)
-        print(self.__get_unique_label())
-
-    def __get_df_label(self):
-        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df = self.pandas_data_frame.pivot_table(columns=['label'],
-                                                index='timeStamp_round',
-                                                values='elapsed',
-                                                aggfunc=pd.np.mean)
-        return df
-
-    def __get_df_error_sample(self):
-        '''возвращает таблицу ошибочных запросов в секунду. В заголовке уникальные запросы'''
-        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df = self.pandas_data_frame.pivot_table(
-            columns=['label'],
-            index='timeStamp_round',
-            values='ErrorCount',
-            aggfunc=pd.np.sum,
-        )
-        return df
-
-    def __len_test(self):
-        '''возвращает длину теста в секундах.'''
-        _ = self.pandas_data_frame['allThreads'].groupby(
-            self.pandas_data_frame.index.map(lambda a: round(a / 1) * 1)).mean()
-        return len(_)
-
-    def get_df_sample(self):
-        '''возвращает таблицу rps. В заголовке униклаьные запросы'''
-        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df = self.pandas_data_frame.pivot_table(
-            columns=['label'],
-            index='timeStamp_round',
-            values='SampleCount',
-            aggfunc=pd.np.sum,
-        )
-        return df
-
-    def __analyze(self):
-        self.__success_samples_per_time()
-        self.__error_samples_per_time()
-        self.__mean_per_time()
-        self.__thread_per_time()
-        self.__label_per_time()
-        self.__get_analize()
-
-    def get_stat(self) -> StanData:
-        return self.data
-
-    def parse(self, file_path: str):
-        self.file_path = file_path
-        self.__read_csv_to_df()
-        self.__analyze()
-
-    def parse2(self, file_path: str):
-        self.file_path = file_path
-        self.__read_csv_to_df()
