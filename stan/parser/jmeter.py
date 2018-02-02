@@ -121,28 +121,28 @@ class JmeterCsvParser(Parser):
             error_sample = self.pandas_data_frame['ErrorCount'].sum()
             print('\tsucces sample:   {0:,}'.format(succes_sample).replace(',', ' '))
             print('\terror sample:   {0:,}'.format(error_sample).replace(',', ' '))
-            df2 = self.__get_df_label(self.pandas_data_frame)
-            sample = self.__get_df_sample(self.pandas_data_frame)
-            error_sample = self.__error_samples_per_time(self.pandas_data_frame)
-            print('\tСписок уникальных запросов:  ')
-            for label in self.__get_unique_label(self.pandas_data_frame):
-                print(
-                    '\tlabel: {}\n\t\t'
-                    'rps: {}\n\t\t'
-                    'count_test: {}\n\t\t'
-                    'error_count_test: {}\n\t\t'
-                    'elapsed (ms) mean: {}\n\t\t'
-                    'min: {}\n\t\t'
-                    'max: {}\n'.format(
-                        label,
-                        round(sample[label].mean(), 1),
-                        round(sample[label].sum(), 1),
-                        round(error_sample[label].sum(), 1),
-                        round(df2[label].mean(), 1),
-                        round(df2[label].min(), 1),
-                        round(df2[label].max(), 1),
-                    ))
-            print('Время анализа DataFrame: ')
+            # df2 = self.__get_df_label(self.pandas_data_frame)
+            # sample = self.__get_df_sample(self.pandas_data_frame)
+            # error_sample = self.__error_samples_per_time(self.pandas_data_frame)
+            # print('\tСписок уникальных запросов:  ')
+            # for label in self.__get_unique_label(self.pandas_data_frame):
+            #     print(
+            #         '\tlabel: {}\n\t\t'
+            #         'rps: {}\n\t\t'
+            #         'count_test: {}\n\t\t'
+            #         'error_count_test: {}\n\t\t'
+            #         'elapsed (ms) mean: {}\n\t\t'
+            #         'min: {}\n\t\t'
+            #         'max: {}\n'.format(
+            #             label,
+            #             round(sample[label].mean(), 1),
+            #             round(sample[label].sum(), 1),
+            #             round(error_sample[label].sum(), 1),
+            #             round(df2[label].mean(), 1),
+            #             round(df2[label].min(), 1),
+            #             round(df2[label].max(), 1),
+            #         ))
+            # print('Время анализа DataFrame: ')
 
     def __label_per_time(self):
         """
