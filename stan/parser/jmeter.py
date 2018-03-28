@@ -160,7 +160,7 @@ class JmeterCsvParser(Parser):
     def __mean_per_time(self):
         _elapsed = self.pandas_data_frame['elapsed'].groupby(
             self.pandas_data_frame.index.map(
-                lambda a: round(a / self.sampling_time) * self.sampling_time)).quantile(0.95)
+                lambda a: round(a / self.sampling_time) * self.sampling_time)).mean()
 
         for ts in _elapsed.keys():
             self.data.append(ts, StanDict(elapsed_mean_all=_elapsed.get(ts)))
@@ -190,16 +190,21 @@ class JmeterCsvParser(Parser):
         print('Успешных запросов: ', sample_count, '  ', 'Ошибки:  ', error_count)
         print('Недоступность продукта: {} %;'.format(percent_error),
               ' Доступность продукта: {} %;'.format(100 - percent_error))
+
+        print('\n95percent rps:   {}\n'.format(self.pandas_data_frame['SampleCount'].quantile(0.95)))
+
         for label in self.__get_unique_label():
             quantle_9 = df[label].quantile(0.9)
             quantle_95 = df[label].quantile(0.95)
             quantle_99 = df[label].quantile(0.99)
             mm = df[label].mean()
-            print('label: "{}"'.format(label))
-            print('90: {}'.format(round(quantle_9, 2)),
-                  ';  95: {}'.format(round(quantle_95, 2)),
-                  ';  99: {}'.format(round(quantle_99, 2)),
-                  ';  mean: {}'.format(round(mm, 2)))
+            print('label: "{}", 90: {}, 95: {}, 99: {}, mean: {}'
+                  .format(label,
+                          round(quantle_9, 2),
+                          round(quantle_95, 2),
+                          round(quantle_99, 2),
+                          round(mm, 2),
+                          ))
         print(' ')
 
     def __label_per_time(self):
