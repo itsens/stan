@@ -21,7 +21,7 @@ class JmeterCsvParser(Parser):
 
     def __read_csv_to_df(self):
         """
-        
+        # TODO: Описать возможные параметры для парсинга
         :return:
         """
         read_csv_param = dict(index_col=['timeStamp'],
@@ -30,6 +30,30 @@ class JmeterCsvParser(Parser):
                               converters={'timeStamp': lambda a: float(a) / self.sec})
 
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+
+    def __get_df_label(self):
+        """
+
+        :return: Таблица с elapsed в заголовке название запросов/операций
+        """
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df_elapsed = self.pandas_data_frame.pivot_table(columns=['label'],
+                                                index='timeStamp_round',
+                                                values='elapsed',
+                                                aggfunc=pd.np.mean)
+        return df_elapsed
+
+    def __get_df_rps(self):
+        """
+
+        :return: таблица с rps в заголовке название запросов/операций
+        """
+        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
+        df_rps = self.pandas_data_frame.pivot_table(columns=['label'],
+                                                 index='timeStamp_round',
+                                                 values='SampleCount',
+                                                 aggfunc=pd.np.sum)
+        return df_rps
 
     def __success_samples_per_time(self):
         """
@@ -134,36 +158,12 @@ class JmeterCsvParser(Parser):
             self.data.append(ts, record)
         print(self.__get_unique_label())
 
-    def __get_df_label(self):
-        """
-
-        :return: Таблица с elapsed в заголовке название запросов/операций
-        """
-        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df = self.pandas_data_frame.pivot_table(columns=['label'],
-                                                index='timeStamp_round',
-                                                values='elapsed',
-                                                aggfunc=pd.np.mean)
-        return df
-
-    def __get_rps(self):
-        """
-
-        :return: таблица с rps в заголовке название запросов/операций
-        """
-        self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df2 = self.pandas_data_frame.pivot_table(columns=['label'],
-                                                 index='timeStamp_round',
-                                                 values='SampleCount',
-                                                 aggfunc=pd.np.sum)
-        return df2
-
     def __rps_per_time(self):
         """
         Наполнение структуры StanData rps по запросам/операциям
         :return:
         """
-        df = self.__get_rps()
+        df = self.__get_df_rps()
         for ts in df.index:
             record = StanDict()
             for label in self.__get_unique_label():
