@@ -31,7 +31,7 @@ class JmeterCsvParser(Parser):
 
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
 
-    def __get_df_label(self):
+    def __get_df_elapsed(self):
         """
 
         :return: Таблица с elapsed в заголовке название запросов/операций
@@ -54,6 +54,31 @@ class JmeterCsvParser(Parser):
                                                  values='SampleCount',
                                                  aggfunc=pd.np.sum)
         return df_rps
+
+    def __label_per_time(self):
+        """
+        Наполнение структуры StanDict длительности отклика в заголовке название запросов/операций
+        :return:
+        """
+        df = self.__get_df_elapsed()
+        for ts in df.index:
+            record = StanDict()
+            for label in self.__get_unique_label():
+                record[label] = df.get_value(ts, label)
+            self.data.append(ts, record)
+        print(self.__get_unique_label())
+
+    def __rps_per_time(self):
+        """
+        Наполнение структуры StanData rps по запросам/операциям
+        :return:
+        """
+        df = self.__get_df_rps()
+        for ts in df.index:
+            record = StanDict()
+            for label in self.__get_unique_label():
+                record[label] = df.get_value(ts, label)
+            self.data_rps.append(ts, record)
 
     def __success_samples_per_time(self):
         """
@@ -116,9 +141,12 @@ class JmeterCsvParser(Parser):
     def __get_analize(self):
         """
         #TODO: пенести в отдельный модуль
+
+        <label>: 95% rps:<>; 95% elapsed: <>
         :return:
         """
-        df = self.__get_df_label()
+        df = self.__get_df_elapsed()
+        df_rps = self.__get_df_rps()
         print(' ')
         print('#results jmeter:')
 
@@ -127,48 +155,52 @@ class JmeterCsvParser(Parser):
         percent_error = error_count / (sample_count + error_count) * 100
         print('Успешных запросов: ', sample_count, '  ', 'Ошибки:  ', error_count)
         print('Недоступность продукта: {} %;'.format(percent_error),
-              ' Доступность продукта: {} %;'.format(100 - percent_error))
+              ' Доступность продукта: {} %;\n'.format(100 - percent_error))
 
-        print('\n95percent rps:   {}\n'.format(self.pandas_data_frame['SampleCount'].quantile(0.95)))
+        print('Перцентиль – это накопленный (суммированный) процент встречаемости конкретного результата, \n'
+              'который складывается из процента встречаемости выбранного результата и всех предшествующих \n'
+              'ему результатов, т.е. стоящих ниже данного по своей величине.')
 
         for label in self.__get_unique_label():
-            quantle_9 = df[label].quantile(0.9)
-            quantle_95 = df[label].quantile(0.95)
-            quantle_99 = df[label].quantile(0.99)
-            mm = df[label].mean()
-            print('label: "{}", 90: {}, 95: {}, 99: {}, mean: {}'
+            print('{:>30}: 95% rps: {:>10}| 95% elapsed: {:>10}|'
                   .format(label,
-                          round(quantle_9, 2),
-                          round(quantle_95, 2),
-                          round(quantle_99, 2),
-                          round(mm, 2),
+                          round(df_rps[label].quantile(0.95), 2),
+                          round(df[label].quantile(0.95), 2),
                           ))
-        print(' ')
 
-    def __label_per_time(self):
-        """
-        Наполнение структуры StanDict длительности отклика в заголовке название запросов/операций
-        :return:
-        """
-        df = self.__get_df_label()
-        for ts in df.index:
-            record = StanDict()
-            for label in self.__get_unique_label():
-                record[label] = df.get_value(ts, label)
-            self.data.append(ts, record)
-        print(self.__get_unique_label())
+        #
+        # for label in self.__get_unique_label():
+        #     quantle_9 = df[label].quantile(0.9)
+        #     quantle_95 = df[label].quantile(0.95)
+        #     quantle_99 = df[label].quantile(0.99)
+        #     mm = df[label].mean()
+        #     print('elapsed: "{}", 90: {}, 95: {}, 99: {}, mean: {}'
+        #           .format(label,
+        #                   round(quantle_9, 2),
+        #                   round(quantle_95, 2),
+        #                   round(quantle_99, 2),
+        #                   round(mm, 2),
+        #                   ))
+        # print('Перцентиль – это накопленный (суммированный) процент встречаемости конкретного результата, \n'
+        #       'который складывается из процента встречаемости выбранного результата и всех предшествующих \n'
+        #       'ему результатов, т.е. стоящих ниже данного по своей величине.')
+        # print('\nall 95percent rps:   {}\n'.format(self.pandas_data_frame['SampleCount'].quantile(0.95)))
+        # for label in self.__get_unique_label():
+        #     quantle_9 = df_rps[label].quantile(0.9)
+        #     quantle_95 = df_rps[label].quantile(0.95)
+        #     quantle_99 = df_rps[label].quantile(0.99)
+        #     mm = df_rps[label].mean()
+        #     print('rps: "{}", 90: {}, 95: {}, 99: {}, mean: {}'
+        #           .format(label,
+        #                   round(quantle_9, 2),
+        #                   round(quantle_95, 2),
+        #                   round(quantle_99, 2),
+        #                   round(mm, 2),
+        #                   ))
+    #
+    #
+    #
 
-    def __rps_per_time(self):
-        """
-        Наполнение структуры StanData rps по запросам/операциям
-        :return:
-        """
-        df = self.__get_df_rps()
-        for ts in df.index:
-            record = StanDict()
-            for label in self.__get_unique_label():
-                record[label] = df.get_value(ts, label)
-            self.data_rps.append(ts, record)
 
     def __analyze(self):
         """
