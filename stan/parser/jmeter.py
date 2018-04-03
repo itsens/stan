@@ -1,10 +1,11 @@
-import pprint
+from numpy import average
 
 __author__ = 'borodenkov.e.a@gmail.com'
 
-from stan.core import StanDict, StanData
-from .parser import Parser, ParserError
 import pandas as pd
+
+from stan.core import StanDict, StanData
+from .parser import Parser
 
 
 class JmeterCsvParser(Parser):
@@ -24,12 +25,15 @@ class JmeterCsvParser(Parser):
         # TODO: Описать возможные параметры для парсинга
         :return:
         """
-        read_csv_param = dict(index_col=['timeStamp'],
-                              low_memory=True,
-                              na_values=[' ', '', 'null'],
-                              converters={'timeStamp': lambda a: float(a) / self.sec})
-
+        read_csv_param = dict(
+            index_col=['timeStamp'],
+            low_memory=True,
+            na_values=[' ', '', 'null'],
+            converters={'timeStamp': lambda a: float(a) / self.sec},
+        )
         self.pandas_data_frame = pd.read_csv(self.file_path, **read_csv_param)
+        self.pandas_data_frame = self.pandas_data_frame[self.pandas_data_frame['success'] == True]
+        return self.pandas_data_frame
 
     def __get_df_elapsed(self):
         """
@@ -37,10 +41,12 @@ class JmeterCsvParser(Parser):
         :return: Таблица с elapsed в заголовке название запросов/операций
         """
         self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df_elapsed = self.pandas_data_frame.pivot_table(columns=['label'],
-                                                index='timeStamp_round',
-                                                values='elapsed',
-                                                aggfunc=pd.np.mean)
+        df_elapsed = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='elapsed',
+            aggfunc=pd.np.mean,
+        )
         return df_elapsed
 
     def __get_df_rps(self):
@@ -49,10 +55,12 @@ class JmeterCsvParser(Parser):
         :return: таблица с rps в заголовке название запросов/операций
         """
         self.pandas_data_frame['timeStamp_round'] = [round(a / 1) * 1 for a in self.pandas_data_frame.index]
-        df_rps = self.pandas_data_frame.pivot_table(columns=['label'],
-                                                 index='timeStamp_round',
-                                                 values='SampleCount',
-                                                 aggfunc=pd.np.sum)
+        df_rps = self.pandas_data_frame.pivot_table(
+            columns=['label'],
+            index='timeStamp_round',
+            values='SampleCount',
+            aggfunc=pd.np.sum,
+        )
         return df_rps
 
     def __label_per_time(self):
@@ -159,48 +167,19 @@ class JmeterCsvParser(Parser):
 
         print('Перцентиль – это накопленный (суммированный) процент встречаемости конкретного результата, \n'
               'который складывается из процента встречаемости выбранного результата и всех предшествующих \n'
-              'ему результатов, т.е. стоящих ниже данного по своей величине.')
+              'ему результатов, т.е. стоящих ниже данного по своей величине.\n')
+        print('{:<50}: 95% rps: {:<10}| 95% elapsed: {:<10}|'.
+              format('\tlabel',
+                     'rps',
+                     'elapsed'))
 
         for label in self.__get_unique_label():
             print('{:>30}: 95% rps: {:>10}| 95% elapsed: {:>10}|'
                   .format(label,
-                          round(df_rps[label].quantile(0.95), 2),
+                          # round(df_rps[label].quantile(0.95), 2),
+                          round(df_rps[label].mean(), 2),
                           round(df[label].quantile(0.95), 2),
                           ))
-
-        #
-        # for label in self.__get_unique_label():
-        #     quantle_9 = df[label].quantile(0.9)
-        #     quantle_95 = df[label].quantile(0.95)
-        #     quantle_99 = df[label].quantile(0.99)
-        #     mm = df[label].mean()
-        #     print('elapsed: "{}", 90: {}, 95: {}, 99: {}, mean: {}'
-        #           .format(label,
-        #                   round(quantle_9, 2),
-        #                   round(quantle_95, 2),
-        #                   round(quantle_99, 2),
-        #                   round(mm, 2),
-        #                   ))
-        # print('Перцентиль – это накопленный (суммированный) процент встречаемости конкретного результата, \n'
-        #       'который складывается из процента встречаемости выбранного результата и всех предшествующих \n'
-        #       'ему результатов, т.е. стоящих ниже данного по своей величине.')
-        # print('\nall 95percent rps:   {}\n'.format(self.pandas_data_frame['SampleCount'].quantile(0.95)))
-        # for label in self.__get_unique_label():
-        #     quantle_9 = df_rps[label].quantile(0.9)
-        #     quantle_95 = df_rps[label].quantile(0.95)
-        #     quantle_99 = df_rps[label].quantile(0.99)
-        #     mm = df_rps[label].mean()
-        #     print('rps: "{}", 90: {}, 95: {}, 99: {}, mean: {}'
-        #           .format(label,
-        #                   round(quantle_9, 2),
-        #                   round(quantle_95, 2),
-        #                   round(quantle_99, 2),
-        #                   round(mm, 2),
-        #                   ))
-    #
-    #
-    #
-
 
     def __analyze(self):
         """
