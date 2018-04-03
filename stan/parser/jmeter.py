@@ -174,7 +174,7 @@ class JmeterCsvParser(Parser):
                      'elapsed'))
 
         for label in self.__get_unique_label():
-            print('{:>30}: 95% rps: {:>10}| 95% elapsed: {:>10}|'
+            print('{:>30}: mean rps: {:>10}| 95% elapsed: {:>10}|'
                   .format(label,
                           # round(df_rps[label].quantile(0.95), 2),
                           round(df_rps[label].mean(), 2),
