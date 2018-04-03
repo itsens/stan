@@ -1,5 +1,3 @@
-from numpy import average
-
 __author__ = 'borodenkov.e.a@gmail.com'
 
 import pandas as pd
@@ -168,7 +166,7 @@ class JmeterCsvParser(Parser):
         print('Перцентиль – это накопленный (суммированный) процент встречаемости конкретного результата, \n'
               'который складывается из процента встречаемости выбранного результата и всех предшествующих \n'
               'ему результатов, т.е. стоящих ниже данного по своей величине.\n')
-        print('{:<50}: 95% rps: {:<10}| 95% elapsed: {:<10}|'.
+        print('{:<50}: mean rps: {:<10}| 95% elapsed: {:<10}|'.
               format('\tlabel',
                      'rps',
                      'elapsed'))
@@ -176,7 +174,6 @@ class JmeterCsvParser(Parser):
         for label in self.__get_unique_label():
             print('{:>30}: mean rps: {:>10}| 95% elapsed: {:>10}|'
                   .format(label,
-                          # round(df_rps[label].quantile(0.95), 2),
                           round(df_rps[label].mean(), 2),
                           round(df[label].quantile(0.95), 2),
                           ))
