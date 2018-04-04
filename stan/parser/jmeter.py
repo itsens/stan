@@ -72,7 +72,6 @@ class JmeterCsvParser(Parser):
             for label in self.__get_unique_label():
                 record[label] = df.get_value(ts, label)
             self.data.append(ts, record)
-        print(self.__get_unique_label())
 
     def __rps_per_time(self):
         """
@@ -193,12 +192,17 @@ class JmeterCsvParser(Parser):
     def get_stat(self) -> StanData:
         return self.data
 
+    def get_rps_stat(self) -> StanData:
+        return self.data_rps
+
     def parse(self, file_path: str):
         self.file_path = file_path
         self.__read_csv_to_df()
         self.__analyze()
 
-    def get_rps(self, file_path: str):
+    def parser_rps(self, file_path: str):
         self.file_path = file_path
         self.__read_csv_to_df()
-        self.__analyze()
+        self.__rps_per_time()
+
+        # self.

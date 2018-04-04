@@ -7,7 +7,7 @@ import os
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_XML = FILE_DIR + '/files/jm_results.xml'
-TEST_CSV = FILE_DIR + '/files/jm_sg.csv'
+TEST_CSV = 'C:\\tmp\\jm_results.csv'
 GRAPH_FILE = FILE_DIR + '/files/{}.html'
 # TEST_XML = FILE_DIR + '/files/jmeter.b2b.xml'
 
@@ -47,16 +47,32 @@ def label(GRAPH_FILE, flat_stat):
     print('graph complite:  {}'.format(GRAPH_FILE))
 
 
-
 if __name__ == '__main__':
     print(TEST_CSV)
     jm_parser = JmeterCsvParser()
     jm_parser.parse(TEST_CSV)
     jm_stat = jm_parser.get_stat()
+
+    print('\nmetrics:\n')
+    for _ in jm_stat.metrics:
+        print(_)
+    # pprint("jm stat metrics:    {}".format(jm_stat.metrics))
     flat_stat = jm_stat.flat()
 
-    pprint('keys statistics jmeter logs: {}'.format(flat_stat.keys()))
+    jm_parser_rps = JmeterCsvParser()
+    jm_parser_rps.parser_rps(TEST_CSV)
+    rps_stat = jm_parser_rps.get_rps_stat()
+    print('\n rps data metrics:\n')
+    for _ in rps_stat.metrics:
+        print(_)
+    flat_stat2 = rps_stat.flat()
+    print(flat_stat2)
 
-    samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
-    mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)
-    label(GRAPH_FILE.format('label'), flat_stat=flat_stat)
+
+
+
+    # pprint('keys statistics jmeter logs: {}'.format(flat_stat.keys()))
+
+    # samples_per_time(GRAPH_FILE.format('sample_count'), flat_stat=flat_stat)
+    # mean_per_time_all(GRAPH_FILE.format('quantile_95'), flat_stat=flat_stat)
+    # label(GRAPH_FILE.format('label'), flat_stat=flat_stat)
