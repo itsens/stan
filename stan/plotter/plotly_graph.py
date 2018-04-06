@@ -171,7 +171,7 @@ class SarGraph:
         x = [x for x in range(len(self.stan_data['index']))]
         gr.append_data('Утилизация CPU ', x=x, y=self.stan_data['cpu_all_util'])
         gr.append_data('Процент времени в ожидании завершения ввода\вывода', x=x, y=self.stan_data['cpu_all_iowait'])
-        gr.sign_axes(x_sign=self.x_sing, y_sign='%.')
+        gr.sign_axes(x_sign=self.x_sing, y_sign='%')
         gr.plot(plot_file_name)
 
     def __cpu_cores_util(self):
@@ -184,7 +184,7 @@ class SarGraph:
         for _ in cpu_dict:
             gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
 
-        gr.sign_axes(x_sign=self.x_sing, y_sign='%.')
+        gr.sign_axes(x_sign=self.x_sing, y_sign='%')
         gr.plot(plot_file_name)
 
     def __get_cpu_core_dict(self):
@@ -195,12 +195,22 @@ class SarGraph:
                     cpu_dict.add(_)
         return cpu_dict
 
-    def __mem(self):
+    def __mem(self, units: str = 'GB'):
         plot_file_name = self.graph_dir + 'mem_' + self.hostname + '.html'
         gr = PlotlyGraph('Утилизация оперативной памяти')
-        x = [x for x in range(len(self.stan_data['index']))]
-        gr.append_data('Оперативная память', x=x, y=self.stan_data['mem_memused'])
-        gr.append_data('Файл подкачки', x=x, y=self.stan_data['mem_swpused'])
+
+        if units == 'KB':
+            y = self.stan_data['mem_memused']
+            y2 = self.stan_data['mem_swpused']
+        elif units == 'MB':
+            y = list(map(lambda a: a / 1024, self.stan_data['mem_memused']))
+            y2 = list(map(lambda a: a / 1024, self.stan_data['mem_swpused']))
+        elif units == 'GB':
+            y = list(map(lambda a: a / 1024 / 1024, self.stan_data['mem_memused']))
+            y2 = list(map(lambda a: a / 1024 / 1024, self.stan_data['mem_swpused']))
+
+        gr.append_data('Оперативная память', x=self.stan_data['index'], y=y)
+        gr.append_data('Файл подкачки', x=self.stan_data['index'], y=y2)
         gr.sign_axes(x_sign=self.x_sing, y_sign='Гб')
         gr.plot(plot_file_name)
 
@@ -216,7 +226,7 @@ class SarGraph:
 
     def __io_bytes(self):
         plot_file_name = self.graph_dir + 'io_bytes_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация диска (в Байт/с')
+        gr = PlotlyGraph('Утилизация диска (в Байт/с)')
         x = [x for x in range(len(self.stan_data['index']))]
         gr.append_data('Чтение', x=x, y=self.stan_data['io_bwrtn'])
         gr.append_data('Запись', x=x, y=self.stan_data['io_bread'])
