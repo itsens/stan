@@ -163,18 +163,20 @@ class SarGraph:
         self.graph_dir = None
         self.hostname = hostname
 
+        self.x_sing = 'Длительность теста, c'
+
     def __cpu(self):
         plot_file_name = self.graph_dir + 'cpu_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация CPU')
+        gr = PlotlyGraph('Утилизация ЦП')
         x = [x for x in range(len(self.stan_data['index']))]
         gr.append_data('Утилизация CPU ', x=x, y=self.stan_data['cpu_all_util'])
         gr.append_data('Процент времени в ожидании завершения ввода\вывода', x=x, y=self.stan_data['cpu_all_iowait'])
-        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
+        gr.sign_axes(x_sign=self.x_sing, y_sign='%.')
         gr.plot(plot_file_name)
 
     def __cpu_cores_util(self):
         plot_file_name = self.graph_dir + 'cpu_single_util_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация CPU', random_colors=True)
+        gr = PlotlyGraph('Утилизация ЦП', random_colors=True)
         x = [x for x in range(len(self.stan_data['index']))]
 
         cpu_dict = self.__get_cpu_core_dict()
@@ -182,7 +184,7 @@ class SarGraph:
         for _ in cpu_dict:
             gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
 
-        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация CPU, %.')
+        gr.sign_axes(x_sign=self.x_sing, y_sign='%.')
         gr.plot(plot_file_name)
 
     def __get_cpu_core_dict(self):
@@ -195,43 +197,43 @@ class SarGraph:
 
     def __mem(self):
         plot_file_name = self.graph_dir + 'mem_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация памяти')
+        gr = PlotlyGraph('Утилизация оперативной памяти')
         x = [x for x in range(len(self.stan_data['index']))]
-        gr.append_data('Утилизация памяти', x=x, y=self.stan_data['mem_memused'])
-        gr.append_data('Утилизация файла подкачки', x=x, y=self.stan_data['mem_swpused'])
-        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Утилизация памяти, Гб')
+        gr.append_data('Оперативная память', x=x, y=self.stan_data['mem_memused'])
+        gr.append_data('Файл подкачки', x=x, y=self.stan_data['mem_swpused'])
+        gr.sign_axes(x_sign=self.x_sing, y_sign='Гб')
         gr.plot(plot_file_name)
 
     def __io(self):
         plot_file_name = self.graph_dir + 'io_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация диска, шт')
+        gr = PlotlyGraph('Утилизация диска (в операциях/c)')
         x = [x for x in range(len(self.stan_data['index']))]
-        gr.append_data('Опреации чтения в секунду', x=x, y=self.stan_data['io_rtps'])
-        gr.append_data('Операций записи в секунду', x=x, y=self.stan_data['io_wtps'])
-        gr.append_data('Операций в секунду (чтение/записи)', x=x, y=self.stan_data['io_tps'])
-        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, шт/с')
+        gr.append_data('Чтение', x=x, y=self.stan_data['io_rtps'])
+        gr.append_data('Запись', x=x, y=self.stan_data['io_wtps'])
+        gr.append_data('Чтение/запись)', x=x, y=self.stan_data['io_tps'])
+        gr.sign_axes(x_sign=self.x_sing, y_sign='операций/с')
         gr.plot(plot_file_name)
 
     def __io_bytes(self):
         plot_file_name = self.graph_dir + 'io_bytes_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация диска, Б/с')
+        gr = PlotlyGraph('Утилизация диска (в Байт/с')
         x = [x for x in range(len(self.stan_data['index']))]
-        gr.append_data('Чтение байт в секунду', x=x, y=self.stan_data['io_bwrtn'])
-        gr.append_data('Запись байт в секунду', x=x, y=self.stan_data['io_bread'])
-        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций, Б/c')
+        gr.append_data('Чтение', x=x, y=self.stan_data['io_bwrtn'])
+        gr.append_data('Запись', x=x, y=self.stan_data['io_bread'])
+        gr.sign_axes(x_sign=self.x_sing, y_sign='Байт/c')
         gr.plot(plot_file_name)
 
     def __dev_util(self):
         plot_file_name = self.graph_dir + 'dev_util_' + self.hostname + '.html'
-        gr = PlotlyGraph('Утилизация диска', random_colors=True)
+        gr = PlotlyGraph('Утилизация диска (в %)', random_colors=True)
         x = [x for x in range(len(self.stan_data['index']))]
 
         io_dict = self.__get_dev_dict()
 
         for _ in io_dict:
-            gr.append_data('Утилизация ' + _, x=x, y=self.stan_data[_])
+            gr.append_data('' + _, x=x, y=self.stan_data[_])
 
-        gr.sign_axes(x_sign='Длительность теста', y_sign='Утилизация, %.')
+        gr.sign_axes(x_sign=self.x_sing, y_sign='%')
         gr.plot(plot_file_name)
 
     def __get_dev_dict(self):
@@ -244,12 +246,12 @@ class SarGraph:
 
     def __queue(self):
         plot_file_name = self.graph_dir + 'queue_' + self.hostname + '.html'
-        gr = PlotlyGraph('Срденяя загрузка')
+        gr = PlotlyGraph('Средняя загрузка')
         x = [x for x in range(len(self.stan_data['index']))]
         gr.append_data('За 1 минуту', x=x, y=self.stan_data['queue_ldavg-1'])
         gr.append_data('За 5 минут', x=x, y=self.stan_data['queue_ldavg-5'])
         gr.append_data('За 15 минут', x=x, y=self.stan_data['queue_ldavg-15'])
-        gr.sign_axes(x_sign='Длительность теста, м', y_sign='Операций')
+        gr.sign_axes(x_sign=self.x_sing, y_sign='операций/мин')
         gr.plot(plot_file_name)
 
     def __net(self):
