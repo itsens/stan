@@ -233,6 +233,20 @@ class SarGraph:
         gr.sign_axes(x_sign=self.x_sing, y_sign='Байт/c')
         gr.plot(plot_file_name)
 
+    def __upd_send(self):
+        """
+        UDP Graph - send, loss, noport, errpr
+        :return:
+        """
+        plot_file_name = self.graph_dir + 'udp_send' + self.hostname + '.html'
+        gr = PlotlyGraph('udp')
+        gr.append_data('net_udp_idgm', x=self.stan_data['index'], y=self.stan_data['net_udp_odgm'])
+        gr.append_data('net_udp_idgmerr', x=self.stan_data['index'], y=self.stan_data['net_udp_idgmerr'])
+        gr.append_data('net_udp_noport', x=self.stan_data['index'], y=self.stan_data['net_udp_noport'])
+        gr.append_data('net_udp_odgm', x=self.stan_data['index'], y=self.stan_data['net_udp_odgm'])
+        gr.sign_axes(x_sign=self.x_sing, y_sign='шт/c')
+        gr.plot(plot_file_name)
+
     def __dev_util(self):
         plot_file_name = self.graph_dir + 'dev_util_' + self.hostname + '.html'
         gr = PlotlyGraph('Утилизация диска (в %)', random_colors=True)
@@ -267,23 +281,47 @@ class SarGraph:
     def __net(self):
         pass
 
-    def sar_graph(self, sets: set = {'cpu', 'cpu_single', 'mem', 'io', 'io_bytes', 'dev_util', 'queue'},
-                  graph_dir=os.path.dirname(os.path.abspath(__file__)),
-                  stan_data=''):
+    def sar_graph(
+            self,
+            sets: set = {
+                'cpu',
+                'cpu_single',
+                'mem',
+                'io',
+                'io_bytes',
+                'dev_util',
+                'queue',
+                'upd_send',
+            },
+            graph_dir=os.path.dirname(os.path.abspath(__file__)),
+            stan_data='',
+    ):
 
-        if not sets.issubset({'cpu', 'cpu_single', 'mem', 'io', 'io_bytes', 'dev_util', 'queue'}):
+        if not sets.issubset({
+            'cpu',
+            'cpu_single',
+            'mem',
+            'io',
+            'io_bytes',
+            'dev_util',
+            'queue',
+            'upd_send',
+        }):
             raise ValueError
 
         self.graph_dir = graph_dir
         self.stan_data = stan_data
 
-        graphs = {'cpu': self.__cpu,
-                  'cpu_single': self.__cpu_cores_util,
-                  'mem': self.__mem,
-                  'io': self.__io,
-                  'io_bytes': self.__io_bytes,
-                  'dev_util': self.__dev_util,
-                  'queue': self.__queue}
+        graphs = {
+            'cpu': self.__cpu,
+            'cpu_single': self.__cpu_cores_util,
+            'mem': self.__mem,
+            'io': self.__io,
+            'io_bytes': self.__io_bytes,
+            'dev_util': self.__dev_util,
+            'queue': self.__queue,
+            'upd_send': self.__upd_send,
+        }
 
         for graph in sets:
             graphs[graph]()
